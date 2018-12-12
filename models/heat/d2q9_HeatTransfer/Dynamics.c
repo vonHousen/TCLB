@@ -22,7 +22,7 @@ CudaDeviceFunction void     Init()                  //initialising function - us
 
 }
 
-CudaDeviceFunction void     Run()                   //main function used every iteration
+CudaDeviceFunction void     Run()                   //main function - acts every iteration
 {
 	switch (NodeType & NODE_BOUNDARY)
 	{
@@ -53,12 +53,12 @@ CudaDeviceFunction float2   Color()                 //does nothing - no CUDA
 	return ret;
 }
 
-CudaDeviceFunction real_t   getRho()                //gets macroscopic density at the current node.
+CudaDeviceFunction real_t   getRho()                //gets density at the current node.
 {
     return f[8]+f[7]+f[6]+f[5]+f[4]+f[3]+f[2]+f[1]+f[0];
 }
 
-CudaDeviceFunction real_t   getT()                  //gets macroscopic temperature at the current node.
+CudaDeviceFunction real_t   getT()                  //gets temperature at the current node.
 {
     return (g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0])/getRho();
 }
@@ -68,7 +68,7 @@ CudaDeviceFunction real_t   getE()                  //gets Energy at the current
 	return g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0];
 }
 
-CudaDeviceFunction vector_t getU()                  //gets velocity vector u
+CudaDeviceFunction vector_t getU()                  //gets velocity vector at the current node
 {
 	real_t 		density = getRho(),
 				g_x     = G_X,
@@ -76,8 +76,8 @@ CudaDeviceFunction vector_t getU()                  //gets velocity vector u
 				t       = getT();
 	vector_t 	u;
 
-	g_x += - Beta * G_X * (t - Tref);
-	g_y += - Beta * G_Y * (t - Tref);
+	g_x += - Beta * G_Boussinesq_X * (t - Tref);
+	g_y += - Beta * G_Boussinesq_Y * (t - Tref);
 
 	if(not IamWall)
 	{

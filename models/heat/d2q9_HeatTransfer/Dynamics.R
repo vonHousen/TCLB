@@ -89,6 +89,14 @@ AddSetting(	name="Tref",
 			default=0,
 			comment='Reference temperature for Boussinesq aproximation' )
 
+AddSetting(	name="G_Boussinesq_X",
+			default=0,
+			comment='Reference temperature for Boussinesq aproximation' )
+
+AddSetting(	name="G_Boussinesq_Y",
+			default=0,
+			comment='Reference temperature for Boussinesq aproximation' )
+
 #=====================================================
 
 
