@@ -63,6 +63,26 @@ CudaDeviceFunction real_t   getT()                  //gets temperature at the cu
     return (g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0])/getRho();
 }
 
+CudaDeviceFunction real_t   getGr()                 //gets value of Grashof number at the current node.
+{
+	real_t  g = sqrt(G_Boussinesq_X*G_Boussinesq_X + G_Boussinesq_Y*G_Boussinesq_Y),
+			nu = Nu_dup;
+
+	return ( (1/Tref) * (getT() - Tref) * (g*Ldim*Ldim*Ldim)/(nu*nu) );
+}
+
+CudaDeviceFunction real_t   getPr()                 //gets value of Prandtl number at the current node.
+{
+	real_t nu = Nu_dup;
+
+	return ( nu / Adiffusity );
+}
+
+CudaDeviceFunction real_t   getRa()                 //gets value of Rayleigh number at the current node.
+{
+	return ( getGr()*getPr() );
+}
+
 CudaDeviceFunction real_t   getE()                  //gets Energy at the current node.
 {
 	return g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0];
@@ -76,8 +96,8 @@ CudaDeviceFunction vector_t getU()                  //gets velocity vector at th
 				t       = getT();
 	vector_t 	u;
 
-	g_x += - Beta * G_Boussinesq_X * (t - Tref);
-	g_y += - Beta * G_Boussinesq_Y * (t - Tref);
+	g_x += - (1/Tref) * G_Boussinesq_X * (t - Tref);
+	g_y += - (1/Tref) * G_Boussinesq_Y * (t - Tref);
 
 	if(not IamWall)
 	{

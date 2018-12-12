@@ -27,6 +27,9 @@ AddQuantity(name="Rho",	unit="kg/m3")
 AddQuantity(name="T",	unit="K")
 AddQuantity(name="U",	unit="m/s",	vector=T)
 AddQuantity(name="E",	unit="J/m3")
+AddQuantity(name="Gr")
+AddQuantity(name="Pr")
+AddQuantity(name="Ra")
 
 #=====================================================
 
@@ -87,15 +90,27 @@ AddSetting(	name="Beta",
 
 AddSetting(	name="Tref",
 			default=0,
-			comment='Reference temperature for Boussinesq aproximation' )
+			comment='Reference temperat. for Boussinesq aprox' )
+
+AddSetting(	name="Ldim",
+			default=0,
+			comment='Character. dimens. for dimensionless numbers' )
+
+AddSetting(	name="Adiffusity",
+			default=0,
+			comment='Thermal diffusivity' )
 
 AddSetting(	name="G_Boussinesq_X",
 			default=0,
-			comment='Reference temperature for Boussinesq aproximation' )
+			comment='Acceleration x for Boussinesq aproximation' )
 
 AddSetting(	name="G_Boussinesq_Y",
 			default=0,
-			comment='Reference temperature for Boussinesq aproximation' )
+			comment='Acceleration y for Boussinesq aproximation' )
+
+AddSetting(	name="Nu_dup",
+			default=0,
+			comment='Viscosity - duplicate' )
 
 #=====================================================
 
@@ -105,8 +120,8 @@ AddNodeType(name="WallSouth",	group="BOUNDARY" )
 AddNodeType(name="WallNorth",	group="BOUNDARY" )
 AddNodeType(name="Wall",		group="BOUNDARY" )
 AddNodeType(name="BGK",			group="COLLISION" )
-AddNodeType(name="DefaultAlfa",          group="TEMPBOUNDARY")
-AddNodeType(name="OtherAlfa",          group="TEMPBOUNDARY")
+AddNodeType(name="DefaultAlfa", group="TEMPBOUNDARY")
+AddNodeType(name="OtherAlfa",   group="TEMPBOUNDARY")
 
 #====================================================
 
