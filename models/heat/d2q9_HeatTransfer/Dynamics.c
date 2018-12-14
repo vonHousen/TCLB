@@ -24,7 +24,10 @@ CudaDeviceFunction void     Init()                  //initialising function - us
 
 CudaDeviceFunction void     Run()                   //main function - acts every iteration
 {
-	switch (NodeType & NODE_BOUNDARY)
+	if ( (NodeType & NODE_BOUNDARY) == NODE_Wall )
+		BounceBack();
+
+	switch (NodeType & NODE_TEMPBOUNDARY)
 	{
 		case NODE_WallSouth:
 			Heating_S();
@@ -32,19 +35,17 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 		case NODE_WallNorth:
 			Cooling_N();
 			break;
-		case NODE_Wall:
-			BounceBack();
+		case NODE_Heater:
+			real_t u[2]     = {0.0, 0.0};
+			SetEquilibrium_g( Density*SourceTemperature, u);
 			break;
 	}
+
 	if ((NodeType & NODE_COLLISION))
 	{
 		CollisionEDM();
 	}
-	if ((NodeType & NODE_TEMPBOUNDARY) == NODE_Heater)
-	{
-		real_t u[2]     = {0.0, 0.0};
-		SetEquilibrium_g(Density*SourceTemperature, u);
-	}
+
 
 	AddToTotalHeat( getE() );
 
@@ -54,7 +55,7 @@ CudaDeviceFunction float2   Color()                 //does nothing - no CUDA
 {
 
 	float2 ret{0.0, 0.0};
-
+	//TODO change C++11 into C
 	return ret;
 }
 
@@ -93,22 +94,31 @@ CudaDeviceFunction real_t   getE()                  //gets Energy at the current
 	return g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0];
 }
 
+CudaDeviceFunction vector_t getG()                  //gets acceleration vector at the current node
+{
+	vector_t    g;
+
+	real_t 		density = getRho(),
+	            t       = getT();
+
+	g.x     = G_X - (1/Tref) * G_Boussinesq_X * (t - Tref);
+	g.y     = G_Y - (1/Tref) * G_Boussinesq_Y * (t - Tref);
+
+	return g;
+}
+
 CudaDeviceFunction vector_t getU()                  //gets velocity vector at the current node
 {
-	real_t 		density = getRho(),
-				g_x     = G_X,
-				g_y     = G_Y,
-				t       = getT();
-	vector_t 	u;
+	real_t 		density = getRho();
 
-	g_x += - (1/Tref) * G_Boussinesq_X * (t - Tref);
-	g_y += - (1/Tref) * G_Boussinesq_Y * (t - Tref);
+	vector_t 	u,
+				g = getG();
 
 	if(not IamWall)
 	{
 		// pu' = pu + G/2
-		u.x = (( f[8] - f[7] - f[6] + f[5] - f[3] + f[1]) / density + g_x * 0.5);
-		u.y = ((-f[8] - f[7] + f[6] + f[5] - f[4] + f[2]) / density + g_y * 0.5);
+		u.x = (( f[8] - f[7] - f[6] + f[5] - f[3] + f[1]) / density + g.x * 0.5);
+		u.y = ((-f[8] - f[7] + f[6] + f[5] - f[4] + f[2]) / density + g.y * 0.5);
 		u.z = 0.0;
 	}
 	else
@@ -246,66 +256,23 @@ CudaDeviceFunction void     AdiabaticNorth()        //boundary condition for nor
 CudaDeviceFunction void     Heating_S()             //boundary Zou He like condition for heating on south wall
 {
 
-	real_t	uf 		= g[3],
-			density = getRho();
-/*
-	//first: adiabatic wall
-	g[3]	= g[1];
-	g[1]	= uf;
+	real_t	density = getRho();
 
-	uf 		= g[4];
-	g[4]	= g[2];
-	g[2]	= uf;
-
-	uf 		= g[7];
-	g[7]	= g[5];
-	g[5]	= uf;
-
-	uf 		= g[8];
-	g[8]	= g[6];
-	g[6]	= uf;
-
-	//then
 	g[2] += Q*density * 2.0/3.0;
 	g[5] += Q*density * 1.0/6.0;
 	g[6] += Q*density * 1.0/6.0;
-*/
-	real_t u[2]     = {0.0, 0.0};
-	SetEquilibrium_g(Density*SourceTemperature, u);
-
 
 }
 
 CudaDeviceFunction void     Cooling_N()             //boundary Zou He like condition for cooling on north wall
 {
 
-	real_t	uf 		= g[3],
-			density = getRho();
-/*
-	//first: adiabatic wall
-	g[3]	= g[1];
-	g[1]	= uf;
-
-	uf 		= g[4];
-	g[4]	= g[2];
-	g[2]	= uf;
-
-	uf 		= g[7];
-	g[7]	= g[5];
-	g[5]	= uf;
-
-	uf 		= g[8];
-	g[8]	= g[6];
-	g[6]	= uf;
-
-	//then
+	real_t	density = getRho();
 
 	g[4] -= Q*density * 2.0/3.0;
 	g[7] -= Q*density * 1.0/6.0;
 	g[8] -= Q*density * 1.0/6.0;
-*/
-	real_t u[2]     = {0.0, 0.0};
-	SetEquilibrium_g(Density*SourceTemperature2, u);
+
 }
 
 
@@ -413,20 +380,16 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 	real_t      density                 = getRho(),
                 u[2]                    = { (( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density ),
 	                                        ((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density )  },
-				f_before_collision[9]   = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] },
-				g_x                     = G_X,
-				g_y                     = G_Y,
-				t                       = getT();
+				f_before_collision[9]   = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] };
+	vector_t    acceleration            = getG();
 
 	SetEquilibrium_f(density, u);
 	real_t      f_unforced[9]           = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] };
 
-	g_x += - (1/Tref) * G_Boussinesq_X * (t - Tref);
-	g_y += - (1/Tref) * G_Boussinesq_Y * (t - Tref);
 
 
-	u[0] = (( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density + g_x/Omega );
-	u[1] = ((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density + g_y/Omega );
+	u[0] = (( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density + acceleration.x/Omega );
+	u[1] = ((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density + acceleration.y/Omega );
 	SetEquilibrium_f(density, u);
 
 	for(int i=0; i<9; i++) {
@@ -437,11 +400,11 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 	//saving memory by using f-variables
 
 	real_t  fluidAlfa;
-	if ((NodeType & NODE_TEMPBOUNDARY)==NODE_DefaultAlfa)
+	if ((NodeType & NODE_TEMPALFA)      == NODE_DefaultAlfa)
 	{
 		fluidAlfa = FluidAlfa;
 	}
-	else if ((NodeType & NODE_TEMPBOUNDARY)==NODE_OtherAlfa)
+	else if ((NodeType & NODE_TEMPALFA) == NODE_OtherAlfa)
 	{
 		fluidAlfa = FluidAlfa2;
 	}

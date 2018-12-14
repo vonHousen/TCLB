@@ -120,12 +120,13 @@ AddSetting(	name="Nu_dup",
 
 
 AddNodeType(name="Heater",      group="TEMPBOUNDARY")
-AddNodeType(name="WallSouth",	group="BOUNDARY" )
-AddNodeType(name="WallNorth",	group="BOUNDARY" )
+AddNodeType(name="WallSouth",	group="TEMPBOUNDARY" )
+AddNodeType(name="WallNorth",	group="TEMPBOUNDARY" )
 AddNodeType(name="Wall",		group="BOUNDARY" )
 AddNodeType(name="BGK",			group="COLLISION" )
-AddNodeType(name="DefaultAlfa", group="TEMPBOUNDARY")
-AddNodeType(name="OtherAlfa",   group="TEMPBOUNDARY")
+AddNodeType(name="DefaultAlfa", group="TEMPALFA")
+AddNodeType(name="OtherAlfa",   group="TEMPALFA")
+#TODO alfa not in the group!!
 
 #====================================================
 
