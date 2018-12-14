@@ -110,7 +110,6 @@ CudaDeviceFunction vector_t getG()                  //gets acceleration vector a
 CudaDeviceFunction vector_t getU()                  //gets velocity vector at the current node
 {
 	real_t 		density = getRho();
-
 	vector_t 	u,
 				g = getG();
 
