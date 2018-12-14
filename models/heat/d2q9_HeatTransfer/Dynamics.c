@@ -40,6 +40,11 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 	{
 		CollisionEDM();
 	}
+	if ((NodeType & NODE_TEMPBOUNDARY) == NODE_Heater)
+	{
+		real_t u[2]     = {0.0, 0.0};
+		SetEquilibrium_g(Density*SourceTemperature, u);
+	}
 
 	AddToTotalHeat( getE() );
 
@@ -243,7 +248,7 @@ CudaDeviceFunction void     Heating_S()             //boundary Zou He like condi
 
 	real_t	uf 		= g[3],
 			density = getRho();
-
+/*
 	//first: adiabatic wall
 	g[3]	= g[1];
 	g[1]	= uf;
@@ -264,6 +269,9 @@ CudaDeviceFunction void     Heating_S()             //boundary Zou He like condi
 	g[2] += Q*density * 2.0/3.0;
 	g[5] += Q*density * 1.0/6.0;
 	g[6] += Q*density * 1.0/6.0;
+*/
+	real_t u[2]     = {0.0, 0.0};
+	SetEquilibrium_g(Density*SourceTemperature, u);
 
 
 }
@@ -273,7 +281,7 @@ CudaDeviceFunction void     Cooling_N()             //boundary Zou He like condi
 
 	real_t	uf 		= g[3],
 			density = getRho();
-
+/*
 	//first: adiabatic wall
 	g[3]	= g[1];
 	g[1]	= uf;
@@ -295,8 +303,9 @@ CudaDeviceFunction void     Cooling_N()             //boundary Zou He like condi
 	g[4] -= Q*density * 2.0/3.0;
 	g[7] -= Q*density * 1.0/6.0;
 	g[8] -= Q*density * 1.0/6.0;
-
-
+*/
+	real_t u[2]     = {0.0, 0.0};
+	SetEquilibrium_g(Density*SourceTemperature2, u);
 }
 
 
@@ -404,13 +413,20 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 	real_t      density                 = getRho(),
                 u[2]                    = { (( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density ),
 	                                        ((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density )  },
-				f_before_collision[9]   = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] };
+				f_before_collision[9]   = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] },
+				g_x                     = G_X,
+				g_y                     = G_Y,
+				t                       = getT();
 
 	SetEquilibrium_f(density, u);
 	real_t      f_unforced[9]           = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] };
 
-	u[0] = (( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density + G_X/Omega );
-	u[1] = ((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density + G_Y/Omega );
+	g_x += - (1/Tref) * G_Boussinesq_X * (t - Tref);
+	g_y += - (1/Tref) * G_Boussinesq_Y * (t - Tref);
+
+
+	u[0] = (( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density + g_x/Omega );
+	u[1] = ((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density + g_y/Omega );
 	SetEquilibrium_f(density, u);
 
 	for(int i=0; i<9; i++) {

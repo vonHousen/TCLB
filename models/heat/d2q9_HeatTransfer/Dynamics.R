@@ -80,6 +80,10 @@ AddSetting(	name="SourceTemperature",
 			default=300,
 			comment='Temperature of the source')
 
+AddSetting(	name="SourceTemperature2",
+			default=300,
+			comment='Temperature of the 2nd source')
+
 AddSetting(	name="Q",
 			default=0,
 			comment='Heat flux' )
