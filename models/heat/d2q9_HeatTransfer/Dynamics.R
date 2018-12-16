@@ -76,13 +76,17 @@ AddSetting(	name="FluidAlfa2",
 			default=1,
 			comment='Coefficent of heat transfer - another one')
 
-AddSetting(	name="SourceTemperature",
+AddSetting(	name="SourceTemperature1",
 			default=300,
-			comment='Temperature of the source')
+			comment='Temperature of the 1st source')
 
 AddSetting(	name="SourceTemperature2",
 			default=300,
 			comment='Temperature of the 2nd source')
+
+AddSetting(	name="InitSourceTemperature",
+			default=300,
+			comment='Temperature of the source at initialisation')
 
 AddSetting(	name="Q",
 			default=0,
@@ -120,6 +124,7 @@ AddSetting(	name="Nu_dup",
 
 
 AddNodeType(name="Heater",      group="TEMPBOUNDARY")
+AddNodeType(name="InitHeater",      group="TEMPBOUNDARY")
 AddNodeType(name="WallSouth",	group="TEMPBOUNDARY" )
 AddNodeType(name="WallNorth",	group="TEMPBOUNDARY" )
 AddNodeType(name="Wall",		group="BOUNDARY" )

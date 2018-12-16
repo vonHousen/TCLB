@@ -16,13 +16,6 @@
 		<Wall mask="ALL">
 			<Box dy="0" ny="1"/>
 			<Box dy="-1" ny="1"/>
-			<!--Sphere dy="0.0099m" ny="0.0002m" dx="0.0033m" nx="0.0002m"/-->
-			<Sphere dy="0.0097m" ny="0.0006m" dx="0.00197m" nx="0.0006m"/>
-			<!--Sphere dy="0.0099m" ny="0.0002m" dx="0.0165m" nx="0.0002m"/>
-			<Sphere dy="0.0033m" ny="0.0002m" dx="0.0066m" nx="0.0002m"/>
-			<Sphere dy="0.0033m" ny="0.0002m" dx="0.0132m" nx="0.0002m"/>
-			<Sphere dy="0.0165m" ny="0.0002m" dx="0.0066m" nx="0.0002m"/>
-			<Sphere dy="0.0165m" ny="0.0002m" dx="0.0132m" nx="0.0002m"/-->
 		</Wall>
 
 		<WallSouth>
@@ -37,35 +30,30 @@
 			<Box/>
 		</DefaultAlfa>
 
-		<!--Heater>
-			<Sphere dy="0.0099m" ny="0.0002m" dx="0.0033m" nx="0.0002m"/>
-			<Sphere dy="0.0099m" ny="0.0002m" dx="0.0099m" nx="0.0002m"/>
-			<Sphere dy="0.0099m" ny="0.0002m" dx="0.0165m" nx="0.0002m"/>
-			<Sphere dy="0.0033m" ny="0.0002m" dx="0.0066m" nx="0.0002m"/>
-			<Sphere dy="0.0033m" ny="0.0002m" dx="0.0132m" nx="0.0002m"/>
-			<Sphere dy="0.0165m" ny="0.0002m" dx="0.0066m" nx="0.0002m"/>
-			<Sphere dy="0.0165m" ny="0.0002m" dx="0.0132m" nx="0.0002m"/>
-		</Heater-->
+		<InitHeater>
+			<Sphere dy="0.0098m" ny="0.0004m" dx="0.0198m" nx="0.0004m"/>
+		</InitHeater>
 
 	</Geometry>
 
 	<Model>
 		<Params InitTemperature="300K"/>
-		<Params FluidAlfa="2"/>
+		<Params FluidAlfa="3"/>
 		<Params Omega="1.0"/>
 		<Params Q="1.39"/>
 		<Params Beta="210e-6"/>
 		<Params Tref="300K"/>
-		<Params G_Boussinesq_Y="-20em/s2"/>
+		<Params G_Boussinesq_Y="-9.81m/s2"/>
 		<Params Ldim="0.02m"/>
 		<Params Adiffusity="0.143mm2/s"/>
 		<Params Nu_dup="1e-5m2/s"/>
 		<Params SourceTemperature="350K"/>
 		<Params SourceTemperature2="250K"/>
+		<Params InitSourceTemperature="350K"/>
 	</Model>
 
 	<VTK/>
-	<Solve Iterations="30000">
+	<Solve Iterations="20000">
 		<VTK Iterations="500"/>
 	</Solve>
 

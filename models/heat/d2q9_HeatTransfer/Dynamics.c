@@ -13,9 +13,9 @@ CudaDeviceFunction void     Init()                  //initialising function - us
 
 	SetEquilibrium_f(density, u);
 
-	if ((NodeType & NODE_TEMPBOUNDARY) == NODE_Heater)
+	if ((NodeType & NODE_TEMPBOUNDARY) == NODE_InitHeater)
 	{
-		rhoT = density*SourceTemperature;
+		rhoT = density*InitSourceTemperature;
 	}
 
 	SetEquilibrium_g(rhoT, u);
@@ -37,7 +37,7 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 			break;
 		case NODE_Heater:
 			real_t u[2]     = {0.0, 0.0};
-			SetEquilibrium_g( Density*SourceTemperature, u);
+			SetEquilibrium_g( Density*SourceTemperature1, u);
 			break;
 	}
 
