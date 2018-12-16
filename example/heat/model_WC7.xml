@@ -55,6 +55,7 @@
 	<VTK/>
 	<Solve Iterations="20000">
 		<VTK Iterations="500"/>
+		<Log Iterations="500"/>
 	</Solve>
 
 

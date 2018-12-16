@@ -31,6 +31,7 @@ AddQuantity(name="Gr")
 AddQuantity(name="Pr")
 AddQuantity(name="Ra")
 
+
 #=====================================================
 
 
@@ -117,23 +118,24 @@ AddSetting(	name="G_Boussinesq_Y",
 			comment='Acceleration y for Boussinesq aproximation' )
 
 AddSetting(	name="Nu_dup",
-			default=0,
+			default=0.1666666,
 			comment='Viscosity - duplicate' )
 
 #=====================================================
 
 
 AddNodeType(name="Heater",      group="TEMPBOUNDARY")
-AddNodeType(name="InitHeater",      group="TEMPBOUNDARY")
+AddNodeType(name="InitHeater",  group="TEMPBOUNDARY")
 AddNodeType(name="WallSouth",	group="TEMPBOUNDARY" )
 AddNodeType(name="WallNorth",	group="TEMPBOUNDARY" )
 AddNodeType(name="Wall",		group="BOUNDARY" )
 AddNodeType(name="BGK",			group="COLLISION" )
 AddNodeType(name="DefaultAlfa", group="TEMPALFA")
 AddNodeType(name="OtherAlfa",   group="TEMPALFA")
-#TODO alfa not in the group!!
+#TODO alfa not in the group "TEMPALFA"
 
 #====================================================
 
 
-AddGlobal(  name="TotalHeat",    comment='Energy', unit="J" )
+AddGlobal(  name="TotalHeat",    comment='Energy',      unit="J" )
+AddGlobal(  name="TotalMass",    comment='Total mass',  unit="kg" )

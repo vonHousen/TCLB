@@ -42,31 +42,32 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 	}
 
 	if ((NodeType & NODE_COLLISION))
-	{
 		CollisionEDM();
-	}
+
 
 
 	AddToTotalHeat( getE() );
+	AddToTotalMass( getRho() );
 
 }
 
 CudaDeviceFunction float2   Color()                 //does nothing - no CUDA
 {
+	float2 ret;
+	ret.x = (getT()-Tref)/Tref;
+	ret.y = 1;
 
-	float2 ret{0.0, 0.0};
-	//TODO change C++11 into C
 	return ret;
 }
 
 CudaDeviceFunction real_t   getRho()                //gets density at the current node.
 {
-    return f[8]+f[7]+f[6]+f[5]+f[4]+f[3]+f[2]+f[1]+f[0];
+    return ( f[8]+f[7]+f[6]+f[5]+f[4]+f[3]+f[2]+f[1]+f[0] );
 }
 
 CudaDeviceFunction real_t   getT()                  //gets temperature at the current node.
 {
-    return (g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0])/getRho();
+    return ( g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0] )/getRho();
 }
 
 CudaDeviceFunction real_t   getGr()                 //gets value of Grashof number at the current node.
@@ -74,7 +75,7 @@ CudaDeviceFunction real_t   getGr()                 //gets value of Grashof numb
 	real_t  g = sqrt(G_Boussinesq_X*G_Boussinesq_X + G_Boussinesq_Y*G_Boussinesq_Y),
 			nu = Nu_dup;
 
-	return ( (1/Tref) * (getT() - Tref) * (g*Ldim*Ldim*Ldim)/(nu*nu) );
+	return ( (1/Tref) * fabs(getT() - Tref) * (g*Ldim*Ldim*Ldim)/(nu*nu) );
 }
 
 CudaDeviceFunction real_t   getPr()                 //gets value of Prandtl number at the current node.
@@ -91,7 +92,7 @@ CudaDeviceFunction real_t   getRa()                 //gets value of Rayleigh num
 
 CudaDeviceFunction real_t   getE()                  //gets Energy at the current node.
 {
-	return g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0];
+	return ( g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0] );
 }
 
 CudaDeviceFunction vector_t getG()                  //gets acceleration vector at the current node
@@ -176,82 +177,6 @@ CudaDeviceFunction void     BounceBack()            //bouncing back f - field
 	g[6]	= uf;
 }
 
-CudaDeviceFunction void     AdiabaticSouth()        //boundary condition for south wall - TODO: complete south wall
-{
-	/*real_t temp;
-
-	temp	= f[3];
-	f[3]	= f[1];
-	f[1]	= temp;
-
-	temp 	= f[4];
-	f[4]	= f[2];
-	f[2]	= temp;
-
-	temp 	= f[7];
-	f[7]	= f[5];
-	f[5]	= temp;
-
-	temp 	= f[8];
-	f[8]	= f[6];
-	f[6]	= temp;
-
-
-	temp 	= g[3];
-	g[3]	= g[1];
-	g[1]	= temp;
-
-	temp 	= g[4];
-	g[4]	= 0;
-	g[2]	= temp;
-
-	temp 	= g[7];
-	g[7]	= 0;
-	g[5]	= temp;
-
-	temp 	= g[8];
-	g[8]	= 0;
-	g[6]	= temp;*/
-}
-
-CudaDeviceFunction void     AdiabaticNorth()        //boundary condition for north wall - TODO: complete north wall
-{
-	/*real_t temp;
-
-	temp	= f[3];
-	f[3]	= f[1];
-	f[1]	= temp;
-
-	temp 	= f[4];
-	f[4]	= f[2];
-	f[2]	= temp;
-
-	temp 	= f[7];
-	f[7]	= f[5];
-	f[5]	= temp;
-
-	temp 	= f[8];
-	f[8]	= f[6];
-	f[6]	= temp;
-
-
-	temp 	= g[3];
-	g[3]	= g[1];
-	g[1]	= temp;
-
-	temp 	= g[4];
-	g[4]	= g[2];
-	g[2]	= 0;
-
-	temp 	= g[7];
-	g[7]	= g[5];
-	g[5]	= 0;
-
-	temp 	= g[8];
-	g[8]	= g[6];
-	g[6]	= 0;*/
-}
-
 CudaDeviceFunction void     Heating_S()             //boundary Zou He like condition for heating on south wall
 {
 
@@ -281,29 +206,29 @@ CudaDeviceFunction void     Cooling_N()             //boundary Zou He like condi
 CudaDeviceFunction void     SetEquilibrium_f(const real_t density, const real_t *u)
 {
 	//  relaxation factor
-	static constexpr real_t  S[9] = { 4.0 /  9.0,
-									  1.0 /  9.0,
-									  1.0 /  9.0,
-									  1.0 /  9.0,
-									  1.0 /  9.0,
-									  1.0 / 36.0,
-									  1.0 / 36.0,
-									  1.0 / 36.0,
-									  1.0 / 36.0  };
+	real_t  S[9] =  { 4.0 /  9.0,
+					  1.0 /  9.0,
+					  1.0 /  9.0,
+					  1.0 /  9.0,
+					  1.0 /  9.0,
+					  1.0 / 36.0,
+					  1.0 / 36.0,
+					  1.0 / 36.0,
+					  1.0 / 36.0  };
 
 	//d2q9 - 9 lattice directions
-	static constexpr real_t  c[9][2] = { { 0.0, 0.0},
-	                                     { 1.0, 0.0},
-	                                     { 0.0, 1.0},
-	                                     {-1.0, 0.0},
-	                                     { 0.0,-1.0},
-	                                     { 1.0, 1.0},
-	                                     {-1.0, 1.0},
-	                                     {-1.0,-1.0},
-	                                     { 1.0,-1.0}  };
+	real_t  c[9][2] = {  { 0.0, 0.0},
+                         { 1.0, 0.0},
+                         { 0.0, 1.0},
+                         {-1.0, 0.0},
+                         { 0.0,-1.0},
+                         { 1.0, 1.0},
+                         {-1.0, 1.0},
+                         {-1.0,-1.0},
+                         { 1.0,-1.0}  };
 
-	real_t cu_temp, u2_temp;                        //cu_temp = c*u, u2_temp = u^2
-	constexpr real_t c2_s = 1.0 / 3.0;      //c2_s = c_s^2 <==> lattice speed of sound
+	real_t cu_temp, u2_temp;      //cu_temp = c*u, u2_temp = u^2
+	real_t c2_s = 1.0 / 3.0;      //c2_s = c_s^2 <==> lattice speed of sound
 
 
 
@@ -336,29 +261,29 @@ CudaDeviceFunction void     SetEquilibrium_f(const real_t density, const real_t 
 CudaDeviceFunction void     SetEquilibrium_g(const real_t rhoT, const real_t u[2])
 {
 	//  relaxation factor
-	static constexpr real_t  S[9] = { 4.0 /  9.0,
-	                                  1.0 /  9.0,
-	                                  1.0 /  9.0,
-	                                  1.0 /  9.0,
-	                                  1.0 /  9.0,
-	                                  1.0 / 36.0,
-	                                  1.0 / 36.0,
-	                                  1.0 / 36.0,
-	                                  1.0 / 36.0  };
+	real_t  S[9] =  { 4.0 /  9.0,
+                      1.0 /  9.0,
+                      1.0 /  9.0,
+                      1.0 /  9.0,
+                      1.0 /  9.0,
+                      1.0 / 36.0,
+                      1.0 / 36.0,
+                      1.0 / 36.0,
+                      1.0 / 36.0  };
 
 	//d2q9 - 9 lattice directions
-	static constexpr real_t  c[9][2] = { { 0.0, 0.0},
-	                                     { 1.0, 0.0},
-	                                     { 0.0, 1.0},
-	                                     {-1.0, 0.0},
-	                                     { 0.0,-1.0},
-	                                     { 1.0, 1.0},
-	                                     {-1.0, 1.0},
-	                                     {-1.0,-1.0},
-	                                     { 1.0,-1.0}  };
+	real_t  c[9][2] = {  { 0.0, 0.0},
+                         { 1.0, 0.0},
+                         { 0.0, 1.0},
+                         {-1.0, 0.0},
+                         { 0.0,-1.0},
+                         { 1.0, 1.0},
+                         {-1.0, 1.0},
+                         {-1.0,-1.0},
+                         { 1.0,-1.0}  };
 
-	real_t cu_temp, u2_temp;                        //cu_temp = c*u, u2_temp = u^2
-	constexpr real_t c2_s = 1.0 / 3.0;      //c2_s = c_s^2 <==> lattice speed of sound
+	real_t cu_temp, u2_temp;      //cu_temp = c*u, u2_temp = u^2
+	real_t c2_s = 1.0 / 3.0;      //c2_s = c_s^2 <==> lattice speed of sound
 
 
 
