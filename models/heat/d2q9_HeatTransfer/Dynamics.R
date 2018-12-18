@@ -19,15 +19,7 @@ AddDensity( name="g[6]", dx=-1, dy= 1, group="g")
 AddDensity( name="g[7]", dx=-1, dy=-1, group="g")
 AddDensity( name="g[8]", dx= 1, dy=-1, group="g")
 
-AddDensity( name="w[0]", dx= 0, dy= 0, group="w")
-AddDensity( name="w[1]", dx= 1, dy= 0, group="w")
-AddDensity( name="w[2]", dx= 0, dy= 1, group="w")
-AddDensity( name="w[3]", dx=-1, dy= 0, group="w")
-AddDensity( name="w[4]", dx= 0, dy=-1, group="w")
-AddDensity( name="w[5]", dx= 1, dy= 1, group="w")
-AddDensity( name="w[6]", dx=-1, dy= 1, group="w")
-AddDensity( name="w[7]", dx=-1, dy=-1, group="w")
-AddDensity( name="w[8]", dx= 1, dy=-1, group="w")
+AddField("w", stencil2d=1, group="w")
 
 #=====================================================
 
@@ -39,7 +31,7 @@ AddQuantity(name="E",	unit="J/m3")
 AddQuantity(name="Gr")
 AddQuantity(name="Pr")
 AddQuantity(name="Ra")
-AddQuantity(name="Psi")
+AddQuantity(name="W")
 
 
 #=====================================================
@@ -131,7 +123,7 @@ AddSetting(	name="Nu_dup",
 			default=0.1666666,
 			comment='Viscosity - duplicate' )
 
-AddSetting(	name="Psi_init",
+AddSetting(	name="W_init",
 			default=1,
 			comment='Porosity factor' )
 
@@ -147,7 +139,7 @@ AddNodeType(name="Wall",		    group="BOUNDARY" )
 AddNodeType(name="BGK",			    group="COLLISION" )
 AddNodeType(name="DefaultAlfa",     group="TEMPALFA")
 AddNodeType(name="OtherAlfa",       group="TEMPALFA")
-AddNodeType(name="PseudoWall",      group="POROUSBOUNDARY")
+AddNodeType(name="PseudoWall",      group="POROUSWALL")
 #TODO alfa not in the group "TEMPALFA"
 
 #====================================================

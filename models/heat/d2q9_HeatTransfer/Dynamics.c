@@ -2,10 +2,9 @@
 CudaDeviceFunction void     Init()                  //initialising function - used only once
 {
 	real_t  u[2]     = {InitVelocityX, InitVelocityY},
-		    u_w[2]   = {0.0, 0.0},
 			density  = Density,
 			rhoT     = density*InitTemperature,
-			psi      = 1.0;
+			w_init   = 1.0;
 
 	if(IamWall)
 	{
@@ -16,15 +15,13 @@ CudaDeviceFunction void     Init()                  //initialising function - us
 	if ((NodeType & NODE_TEMPBOUNDARY) == NODE_InitHeater)
 		rhoT = density*InitSourceTemperature;
 
-	if ((NodeType & NODE_POROUSBOUNDARY) == NODE_PseudoWall)
-		psi = Psi_init;
+	if ((NodeType & NODE_POROUSWALL) == NODE_PseudoWall)
+		w_init = W_init;
 
+	w = w_init;
 	SetEquilibrium_f(density, u);
 	SetEquilibrium_g(rhoT, u);
-	w[0]=psi;
 
-	for(int i=1; i<8; i++)
-		w[i]=0.0;
 
 }
 
@@ -50,11 +47,11 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 	if ((NodeType & NODE_COLLISION))
 		CollisionEDM();
 
+	w = w(0,0);
 
 
 	AddToTotalHeat( getE() );
 	AddToTotalMass( getRho() );
-
 }
 
 CudaDeviceFunction float2   Color()                 //does nothing - no CUDA
@@ -101,9 +98,9 @@ CudaDeviceFunction real_t   getE()                  //gets Energy at the current
 	return ( g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0] );
 }
 
-CudaDeviceFunction real_t   getPsi()                //gets Porosity factor at the current node.
+CudaDeviceFunction real_t   getW()                //gets Porosity factor at the current node.
 {
-	return ( w[8]+w[7]+w[6]+w[5]+w[4]+w[3]+w[2]+w[1]+w[0] );
+	return ( w(0,0) );
 }
 
 CudaDeviceFunction vector_t getG()                  //gets acceleration vector at the current node
@@ -211,7 +208,6 @@ CudaDeviceFunction void     Cooling_N()             //boundary Zou He like condi
 }
 
 
-
 //======================
 
 													//calculates the equilibrium distribution of field
@@ -296,50 +292,23 @@ CudaDeviceFunction void     SetEquilibrium_g(const real_t rhoT, const real_t u[2
 	}
 }
 
-													//calculates the equilibrium distribution of w - field
-CudaDeviceFunction void     SetEquilibrium_w(const real_t psi, const real_t u[2])
+
+CudaDeviceFunction real_t   G(const real_t w)       //function for calculating porosity factor
 {
-	//  relaxation factor
-	real_t  S[9] =  { 4.0 /  9.0,
-	                  1.0 /  9.0,
-	                  1.0 /  9.0,
-	                  1.0 /  9.0,
-	                  1.0 /  9.0,
-	                  1.0 / 36.0,
-	                  1.0 / 36.0,
-	                  1.0 / 36.0,
-	                  1.0 / 36.0  };
+	real_t w_temp = w;
 
-	//d2q9 - 9 lattice directions
-	real_t  c[9][2] = {  { 0.0, 0.0},
-	                     { 1.0, 0.0},
-	                     { 0.0, 1.0},
-	                     {-1.0, 0.0},
-	                     { 0.0,-1.0},
-	                     { 1.0, 1.0},
-	                     {-1.0, 1.0},
-	                     {-1.0,-1.0},
-	                     { 1.0,-1.0}  };
-
-	real_t cu_temp, u2_temp;      //cu_temp = c*u, u2_temp = u^2
-	real_t c2_s = 1.0 / 3.0;      //c2_s = c_s^2 <==> lattice speed of sound
+	if(w > 1.0)
+		w_temp = 1.0;
+	else if(w<0.0)
+		w_temp = 0.0;
 
 
-
-
-	for(int i=0; i<9; i++)
-	{
-		cu_temp = c[i][0]*u[0] + c[i][1]*u[1];
-		u2_temp = u[0]*u[0] + u[1]*u[1];
-
-		//f_eq = ...
-		w[i] = S[i] * psi * ( 1 + cu_temp/c2_s + (cu_temp*cu_temp)/(2.0*c2_s*c2_s) - u2_temp/(2.0*c2_s) );
-	}
+	return pow(w_temp, 0.01);
 }
-
 
 CudaDeviceFunction void     CollisionEDM()          //physics of the collision (based on Exact Difference Method)
 {
+	//before collision:
 	real_t      density                 = getRho(),
                 u[2]                    = { (( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density ),
 	                                        ((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density )  },
@@ -350,11 +319,12 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 
 
 	SetEquilibrium_f(density, u);
-	real_t      f_unforced[9]           = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] },
-				psi                     = getPsi();
 
-	u[0] = psi*(( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density + acceleration.x/Omega );
-	u[1] = psi*((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density + acceleration.y/Omega );
+	//after collision:
+	real_t      f_unforced[9]           = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] };
+	u[0] = G(w(0,0)) * ( u[0] + acceleration.x/Omega );
+	u[1] = G(w(0,0)) * ( u[1] + acceleration.y/Omega );
+
 	SetEquilibrium_f(density, u);
 
 	for(int i=0; i<9; i++) {
