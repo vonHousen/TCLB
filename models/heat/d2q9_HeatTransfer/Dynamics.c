@@ -209,7 +209,7 @@ CudaDeviceFunction void     Cooling_N()             //boundary Zou He like condi
 //======================
 
 													//calculates the equilibrium distribution of field
-CudaDeviceFunction void     SetEquilibrium(const real_t field_val, const real_t *u)
+CudaDeviceFunction void     SetEquilibrium_f(const real_t field_val, const real_t *u)
 {
 	//  relaxation factor
 	real_t  S[9] =  { 4.0 /  9.0,
