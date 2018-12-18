@@ -1,7 +1,8 @@
 
 CudaDeviceFunction void     Init()                  //initialising function - used only once
 {
-	real_t u[2]     = {InitVelocityX, InitVelocityY};
+	real_t u[2]     = {InitVelocityX, InitVelocityY},
+		   u_w[2]   = {0.0, 0.0};
 	real_t density  = Density;
 	real_t rhoT     = density*InitTemperature;
 
@@ -11,14 +12,14 @@ CudaDeviceFunction void     Init()                  //initialising function - us
 		u[1]    = 0.0;
 	}
 
-	SetEquilibrium_f(density, u);
-
 	if ((NodeType & NODE_TEMPBOUNDARY) == NODE_InitHeater)
 	{
 		rhoT = density*InitSourceTemperature;
 	}
 
+	SetEquilibrium_f(density, u);
 	SetEquilibrium_g(rhoT, u);
+	SetEquilibrium_w(Psi, u_w);
 
 }
 
@@ -93,6 +94,11 @@ CudaDeviceFunction real_t   getRa()                 //gets value of Rayleigh num
 CudaDeviceFunction real_t   getE()                  //gets Energy at the current node.
 {
 	return ( g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0] );
+}
+
+CudaDeviceFunction real_t   getPsi()                //gets Porosity factor at the current node.
+{
+	return ( w[8]+w[7]+w[6]+w[5]+w[4]+w[3]+w[2]+w[1]+w[0] );
 }
 
 CudaDeviceFunction vector_t getG()                  //gets acceleration vector at the current node
@@ -202,8 +208,8 @@ CudaDeviceFunction void     Cooling_N()             //boundary Zou He like condi
 
 //======================
 
-													//calculates the equilibrium distribution of f - field
-CudaDeviceFunction void     SetEquilibrium_f(const real_t density, const real_t *u)
+													//calculates the equilibrium distribution of field
+CudaDeviceFunction void     SetEquilibrium(const real_t field_val, const real_t *u)
 {
 	//  relaxation factor
 	real_t  S[9] =  { 4.0 /  9.0,
@@ -239,22 +245,8 @@ CudaDeviceFunction void     SetEquilibrium_f(const real_t density, const real_t 
 		u2_temp = u[0]*u[0] + u[1]*u[1];
 
 		//f_eq = ...
-		f[i] = S[i] * density * ( 1 + cu_temp/c2_s + (cu_temp*cu_temp)/(2.0*c2_s*c2_s) - u2_temp/(2.0*c2_s) );
+		f[i] = S[i] * field_val * ( 1 + cu_temp/c2_s + (cu_temp*cu_temp)/(2.0*c2_s*c2_s) - u2_temp/(2.0*c2_s) );
 	}
-
-	//below the same effect but from tutorial
-	/*
-	real_t d=density;
-	f[0] = ( 2. + ( -u[1]*u[1] - u[0]*u[0] )*3. )*d*2./9.;
-	f[1] = ( 2. + ( -u[1]*u[1] + ( 1 + u[0] )*u[0]*2. )*3. )*d/18.;
-	f[2] = ( 2. + ( -u[0]*u[0] + ( 1 + u[1] )*u[1]*2. )*3. )*d/18.;
-	f[3] = ( 2. + ( -u[1]*u[1] + ( -1 + u[0] )*u[0]*2. )*3. )*d/18.;
-	f[4] = ( 2. + ( -u[0]*u[0] + ( -1 + u[1] )*u[1]*2. )*3. )*d/18.;
-	f[5] = ( 1. + ( ( 1 + u[1] )*u[1] + ( 1 + u[0] + u[1]*3. )*u[0] )*3. )*d/36.;
-	f[6] = ( 1. + ( ( 1 + u[1] )*u[1] + ( -1 + u[0] - u[1]*3. )*u[0] )*3. )*d/36.;
-	f[7] = ( 1. + ( ( -1 + u[1] )*u[1] + ( -1 + u[0] + u[1]*3. )*u[0] )*3. )*d/36.;
-	f[8] = ( 1. + ( ( -1 + u[1] )*u[1] + ( 1 + u[0] - u[1]*3. )*u[0] )*3. )*d/36.;
-	*/
 }
 
 													//calculates the equilibrium distribution of g - field
@@ -295,6 +287,47 @@ CudaDeviceFunction void     SetEquilibrium_g(const real_t rhoT, const real_t u[2
 
 		//f_eq = ...
 		g[i] = S[i] * rhoT * ( 1 + cu_temp/c2_s + (cu_temp*cu_temp)/(2.0*c2_s*c2_s) - u2_temp/(2.0*c2_s) );
+	}
+}
+
+													//calculates the equilibrium distribution of w - field
+CudaDeviceFunction void     SetEquilibrium_w(const real_t psi, const real_t u[2])
+{
+	//  relaxation factor
+	real_t  S[9] =  { 4.0 /  9.0,
+	                  1.0 /  9.0,
+	                  1.0 /  9.0,
+	                  1.0 /  9.0,
+	                  1.0 /  9.0,
+	                  1.0 / 36.0,
+	                  1.0 / 36.0,
+	                  1.0 / 36.0,
+	                  1.0 / 36.0  };
+
+	//d2q9 - 9 lattice directions
+	real_t  c[9][2] = {  { 0.0, 0.0},
+	                     { 1.0, 0.0},
+	                     { 0.0, 1.0},
+	                     {-1.0, 0.0},
+	                     { 0.0,-1.0},
+	                     { 1.0, 1.0},
+	                     {-1.0, 1.0},
+	                     {-1.0,-1.0},
+	                     { 1.0,-1.0}  };
+
+	real_t cu_temp, u2_temp;      //cu_temp = c*u, u2_temp = u^2
+	real_t c2_s = 1.0 / 3.0;      //c2_s = c_s^2 <==> lattice speed of sound
+
+
+
+
+	for(int i=0; i<9; i++)
+	{
+		cu_temp = c[i][0]*u[0] + c[i][1]*u[1];
+		u2_temp = u[0]*u[0] + u[1]*u[1];
+
+		//f_eq = ...
+		w[i] = S[i] * psi * ( 1 + cu_temp/c2_s + (cu_temp*cu_temp)/(2.0*c2_s*c2_s) - u2_temp/(2.0*c2_s) );
 	}
 }
 

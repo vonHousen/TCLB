@@ -19,6 +19,15 @@ AddDensity( name="g[6]", dx=-1, dy= 1, group="g")
 AddDensity( name="g[7]", dx=-1, dy=-1, group="g")
 AddDensity( name="g[8]", dx= 1, dy=-1, group="g")
 
+AddDensity( name="w[0]", dx= 0, dy= 0, group="w")
+AddDensity( name="w[1]", dx= 1, dy= 0, group="w")
+AddDensity( name="w[2]", dx= 0, dy= 1, group="w")
+AddDensity( name="w[3]", dx=-1, dy= 0, group="w")
+AddDensity( name="w[4]", dx= 0, dy=-1, group="w")
+AddDensity( name="w[5]", dx= 1, dy= 1, group="w")
+AddDensity( name="w[6]", dx=-1, dy= 1, group="w")
+AddDensity( name="w[7]", dx=-1, dy=-1, group="w")
+AddDensity( name="w[8]", dx= 1, dy=-1, group="w")
 
 #=====================================================
 
@@ -120,6 +129,10 @@ AddSetting(	name="G_Boussinesq_Y",
 AddSetting(	name="Nu_dup",
 			default=0.1666666,
 			comment='Viscosity - duplicate' )
+
+AddSetting(	name="Psi",
+			default=1,
+			comment='Porosity factor' )
 
 #=====================================================
 
