@@ -135,17 +135,19 @@ AddSetting(	name="Psi_init",
 			default=1,
 			comment='Porosity factor' )
 
+
 #=====================================================
 
 
-AddNodeType(name="Heater",      group="TEMPBOUNDARY")
-AddNodeType(name="InitHeater",  group="TEMPBOUNDARY")
-AddNodeType(name="WallSouth",	group="TEMPBOUNDARY" )
-AddNodeType(name="WallNorth",	group="TEMPBOUNDARY" )
-AddNodeType(name="Wall",		group="BOUNDARY" )
-AddNodeType(name="BGK",			group="COLLISION" )
-AddNodeType(name="DefaultAlfa", group="TEMPALFA")
-AddNodeType(name="OtherAlfa",   group="TEMPALFA")
+AddNodeType(name="Heater",          group="TEMPBOUNDARY")
+AddNodeType(name="InitHeater",      group="TEMPBOUNDARY")
+AddNodeType(name="WallSouth",	    group="TEMPBOUNDARY" )
+AddNodeType(name="WallNorth",	    group="TEMPBOUNDARY" )
+AddNodeType(name="Wall",		    group="BOUNDARY" )
+AddNodeType(name="BGK",			    group="COLLISION" )
+AddNodeType(name="DefaultAlfa",     group="TEMPALFA")
+AddNodeType(name="OtherAlfa",       group="TEMPALFA")
+AddNodeType(name="PseudoWall",      group="POROUSBOUNDARY")
 #TODO alfa not in the group "TEMPALFA"
 
 #====================================================

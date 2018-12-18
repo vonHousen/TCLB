@@ -1,10 +1,11 @@
 
 CudaDeviceFunction void     Init()                  //initialising function - used only once
 {
-	real_t u[2]     = {InitVelocityX, InitVelocityY},
-		   u_w[2]   = {0.0, 0.0};
-	real_t density  = Density;
-	real_t rhoT     = density*InitTemperature;
+	real_t  u[2]     = {InitVelocityX, InitVelocityY},
+		    u_w[2]   = {0.0, 0.0},
+			density  = Density,
+			rhoT     = density*InitTemperature,
+			psi      = 1.0;
 
 	if(IamWall)
 	{
@@ -13,13 +14,17 @@ CudaDeviceFunction void     Init()                  //initialising function - us
 	}
 
 	if ((NodeType & NODE_TEMPBOUNDARY) == NODE_InitHeater)
-	{
 		rhoT = density*InitSourceTemperature;
-	}
+
+	if ((NodeType & NODE_POROUSBOUNDARY) == NODE_PseudoWall)
+		psi = Psi_init;
 
 	SetEquilibrium_f(density, u);
 	SetEquilibrium_g(rhoT, u);
-	SetEquilibrium_w(Psi_init, u_w);
+	w[0]=psi;
+
+	for(int i=1; i<8; i++)
+		w[i]=0.0;
 
 }
 
@@ -206,6 +211,7 @@ CudaDeviceFunction void     Cooling_N()             //boundary Zou He like condi
 }
 
 
+
 //======================
 
 													//calculates the equilibrium distribution of field
@@ -340,13 +346,15 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 				f_before_collision[9]   = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] };
 	vector_t    acceleration            = getG();
 
+
+
+
 	SetEquilibrium_f(density, u);
-	real_t      f_unforced[9]           = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] };
+	real_t      f_unforced[9]           = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] },
+				psi                     = getPsi();
 
-
-
-	u[0] = (( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density + acceleration.x/Omega );
-	u[1] = ((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density + acceleration.y/Omega );
+	u[0] = psi*(( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density + acceleration.x/Omega );
+	u[1] = psi*((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density + acceleration.y/Omega );
 	SetEquilibrium_f(density, u);
 
 	for(int i=0; i<9; i++) {
@@ -396,6 +404,8 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 	for(int i=0; i<9; i++) {
 		g[i] = (f_before_collision[i] - f_unforced[i]) * (1 - omegaT) + g[i];
 	}
+
+	//
 
 }
 
