@@ -39,6 +39,7 @@ AddQuantity(name="E",	unit="J/m3")
 AddQuantity(name="Gr")
 AddQuantity(name="Pr")
 AddQuantity(name="Ra")
+AddQuantity(name="Psi")
 
 
 #=====================================================
@@ -130,7 +131,7 @@ AddSetting(	name="Nu_dup",
 			default=0.1666666,
 			comment='Viscosity - duplicate' )
 
-AddSetting(	name="Psi",
+AddSetting(	name="Psi_init",
 			default=1,
 			comment='Porosity factor' )
 

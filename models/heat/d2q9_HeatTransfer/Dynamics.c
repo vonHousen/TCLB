@@ -19,7 +19,7 @@ CudaDeviceFunction void     Init()                  //initialising function - us
 
 	SetEquilibrium_f(density, u);
 	SetEquilibrium_g(rhoT, u);
-	SetEquilibrium_w(Psi, u_w);
+	SetEquilibrium_w(Psi_init, u_w);
 
 }
 
