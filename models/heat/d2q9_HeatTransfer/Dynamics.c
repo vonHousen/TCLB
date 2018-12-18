@@ -98,7 +98,7 @@ CudaDeviceFunction real_t   getE()                  //gets Energy at the current
 	return ( g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0] );
 }
 
-CudaDeviceFunction real_t   getW()                //gets Porosity factor at the current node.
+CudaDeviceFunction real_t   getW()                  //gets Porosity factor at the current node.
 {
 	return ( w(0,0) );
 }
@@ -306,6 +306,21 @@ CudaDeviceFunction real_t   G(const real_t w)       //function for calculating p
 	return pow(w_temp, 0.01);
 }
 
+CudaDeviceFunction real_t   AlfaT(const real_t w)   //function for interpolating AlfaT
+{
+	real_t alfa;
+
+	if( w >= 1.0 )
+		alfa = AlfaFluid;
+	else if( w<=0.0 )
+		alfa = AlfaSolid;
+	else
+		alfa = AlfaSolid*(1.0-w) + AlfaFluid*w;
+
+
+	return alfa;
+}
+
 CudaDeviceFunction void     CollisionEDM()          //physics of the collision (based on Exact Difference Method)
 {
 	//before collision:
@@ -334,18 +349,7 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 	//=========== HEAT ===========
 	//saving memory by using f-variables
 
-	real_t  fluidAlfa;
-	if ((NodeType & NODE_TEMPALFA)      == NODE_DefaultAlfa)
-	{
-		fluidAlfa = FluidAlfa;
-	}
-	else if ((NodeType & NODE_TEMPALFA) == NODE_OtherAlfa)
-	{
-		fluidAlfa = FluidAlfa2;
-	}
-
-
-	real_t  omegaT          = 1.0/(3*fluidAlfa + 0.5),
+	real_t  omega_T          = 1.0/(3* AlfaT( w(0,0) ) + 0.5),
 			rhoT            = density*getT();
 
 	u[0]                    = getU().x ;
@@ -372,7 +376,7 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 	f_unforced[8] = g[8];
 
 	for(int i=0; i<9; i++) {
-		g[i] = (f_before_collision[i] - f_unforced[i]) * (1 - omegaT) + g[i];
+		g[i] = (f_before_collision[i] - f_unforced[i]) * (1 - omega_T) + g[i];
 	}
 
 	//
