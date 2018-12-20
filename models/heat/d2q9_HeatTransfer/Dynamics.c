@@ -293,17 +293,21 @@ CudaDeviceFunction void     SetEquilibrium_g(const real_t rhoT, const real_t u[2
 }
 
 
-CudaDeviceFunction real_t   G(const real_t w)       //function for calculating porosity factor
+CudaDeviceFunction vector_t   G(const real_t w, const vector_t u)       //function for calculating Darcy's acceler.
 {
-	real_t w_temp = w;
+	real_t      w_temp = w;
+	vector_t    u_temp = u;
 
 	if(w > 1.0)
 		w_temp = 1.0;
 	else if(w<0.0)
 		w_temp = 0.0;
 
+	w_temp = -pow(w_temp, 0.01);
+	u_temp.x *= w_temp;
+	u_temp.y *= w_temp;
 
-	return pow(w_temp, 0.01);
+	return u_temp;
 }
 
 CudaDeviceFunction real_t   AlfaT(const real_t w)   //function for interpolating AlfaT
@@ -328,17 +332,19 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
                 u[2]                    = { (( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density ),
 	                                        ((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density )  },
 				f_before_collision[9]   = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] };
-	vector_t    acceleration            = getG();
+	vector_t    acceleration            = getG(),
+				Darcy                   = G( w(0,0), getU() );
 
-
+	acceleration.x +=  + Darcy.x;
+	acceleration.y +=  + Darcy.y;
 
 
 	SetEquilibrium_f(density, u);
 
 	//after collision:
 	real_t      f_unforced[9]           = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] };
-	u[0] = G(w(0,0)) * ( u[0] + acceleration.x/Omega );
-	u[1] = G(w(0,0)) * ( u[1] + acceleration.y/Omega );
+	u[0] =  u[0] + acceleration.x/Omega ;
+	u[1] =  u[1] + acceleration.y/Omega ;
 
 	SetEquilibrium_f(density, u);
 
