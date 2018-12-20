@@ -38,7 +38,7 @@
 
 	<VTK/>
 	<Solve Iterations="20000"/>
-	<Solve Iterations="2000">
+	<Solve Iterations="3000">
 		<VTK Iterations="100"/>
 		<Log Iterations="100"/>
 	</Solve>
