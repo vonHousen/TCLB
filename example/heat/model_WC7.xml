@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC7_3/">
+<CLBConfig version="2.0" output="output/WC7_4/">
 
 	<Units>
 		<Params Size="1e-4m"        gauge="1"/>
@@ -26,36 +26,25 @@
 			<Box dy="-1" ny="1"/>
 		</WallNorth>
 
-		<DefaultAlfa>
-			<Box/>
-		</DefaultAlfa>
-
-		<InitHeater>
-			<Sphere dy="0.0098m" ny="0.0004m" dx="0.0198m" nx="0.0004m"/>
-		</InitHeater>
-
 	</Geometry>
 
 	<Model>
 		<Params InitTemperature="300K"/>
 		<Params FluidAlfa="3"/>
 		<Params Omega="1.0"/>
-		<Params Q="1.39"/>
+		<Params Q="1.39e-2"/>
 		<Params Beta="210e-6"/>
 		<Params Tref="300K"/>
-		<Params G_Boussinesq_Y="-9.81m/s2"/>
+		<!--Params G_Boussinesq_Y="-9.81m/s2"/-->
 		<Params Ldim="0.02m"/>
 		<Params Adiffusity="0.143mm2/s"/>
 		<Params Nu_dup="1e-5m2/s"/>
-		<Params SourceTemperature="350K"/>
-		<Params SourceTemperature2="250K"/>
-		<Params InitSourceTemperature="350K"/>
 	</Model>
 
 	<VTK/>
-	<Solve Iterations="20000">
-		<VTK Iterations="500"/>
-		<Log Iterations="500"/>
+	<Solve Iterations="40000">
+		<VTK Iterations="1000"/>
+		<Log Iterations="1000"/>
 	</Solve>
 
 
