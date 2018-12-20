@@ -355,12 +355,12 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 	//=========== HEAT ===========
 	//saving memory by using f-variables
 
-	real_t  omega_T          = 1.0/(3* AlfaT( w(0,0) ) + 0.5),
+	real_t  omega_T         = 1.0/(3* AlfaT( w(0,0) ) + 0.5),
 			rhoT            = density*getT();
 
-	u[0]                    = getU().x ;
-	u[1]                    = getU().y ;
-	f_before_collision[0] = g[0];
+	u[0]                    = (( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density );
+    u[1]                    = ((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density );
+    f_before_collision[0] = g[0];
 	f_before_collision[1] = g[1];
 	f_before_collision[2] = g[2];
 	f_before_collision[3] = g[3];
