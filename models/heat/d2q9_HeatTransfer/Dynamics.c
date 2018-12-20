@@ -293,10 +293,13 @@ CudaDeviceFunction void     SetEquilibrium_g(const real_t rhoT, const real_t u[2
 }
 
 
-CudaDeviceFunction vector_t   G(const real_t w, const vector_t u)       //function for calculating Darcy's acceler.
+CudaDeviceFunction vector_t   G(const real_t w, const real_t* u)       //function for calculating Darcy's acceler.
 {
 	real_t      w_temp = w;
-	vector_t    u_temp = u;
+	vector_t    u_temp;
+
+	u_temp.x = u[0];
+	u_temp.y = u[1];
 
 	if(w > 1.0)
 		w_temp = 1.0;
@@ -331,20 +334,24 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 	real_t      density                 = getRho(),
                 u[2]                    = { (( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density ),
 	                                        ((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density )  },
-				f_before_collision[9]   = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] };
+				f_before_collision[9]   = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] },
+				u_temp[2];
 	vector_t    acceleration            = getG(),
-				Darcy                   = G( w(0,0), getU() );
-
-	acceleration.x +=  + Darcy.x;
-	acceleration.y +=  + Darcy.y;
+				Darcy;
 
 
 	SetEquilibrium_f(density, u);
 
 	//after collision:
 	real_t      f_unforced[9]           = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] };
-	u[0] =  u[0] + acceleration.x/Omega ;
-	u[1] =  u[1] + acceleration.y/Omega ;
+	u_temp[0] = u[0] + acceleration.x/Omega ;
+	u_temp[1] = u[1] + acceleration.y/Omega ;
+
+	Darcy           = G( w(0,0), u_temp);
+	acceleration.x +=  + Darcy.x;
+	acceleration.y +=  + Darcy.y;
+	u[0] = u_temp[0] + acceleration.x/Omega ;
+	u[1] = u_temp[1] + acceleration.y/Omega ;
 
 	SetEquilibrium_f(density, u);
 
@@ -356,30 +363,14 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 	//saving memory by using f-variables
 
 	real_t  omega_T         = 1.0/(3* AlfaT( w(0,0) ) + 0.5),
-			rhoT            = density*getT();
+			rhoT            = density*getT(),
+			g_before_collision[9] = { g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8] };
 
-	u[0]                    = (( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density );
-    u[1]                    = ((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density );
-    f_before_collision[0] = g[0];
-	f_before_collision[1] = g[1];
-	f_before_collision[2] = g[2];
-	f_before_collision[3] = g[3];
-	f_before_collision[4] = g[4];
-	f_before_collision[5] = g[5];
-	f_before_collision[6] = g[6];
-	f_before_collision[7] = g[7];
-	f_before_collision[8] = g[8];
 
 	SetEquilibrium_g(rhoT, u);
-	f_unforced[0] = g[0];
-	f_unforced[1] = g[1];
-	f_unforced[2] = g[2];
-	f_unforced[3] = g[3];
-	f_unforced[4] = g[4];
-	f_unforced[5] = g[5];
-	f_unforced[6] = g[6];
-	f_unforced[7] = g[7];
-	f_unforced[8] = g[8];
+
+	//after collision
+	real_t      g_unforced[9]           = { g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8] };
 
 	for(int i=0; i<9; i++) {
 		g[i] = (f_before_collision[i] - f_unforced[i]) * (1 - omega_T) + g[i];
