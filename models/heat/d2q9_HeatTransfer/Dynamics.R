@@ -127,6 +127,11 @@ AddSetting(	name="W_init",
 			default=1,
 			comment='Porosity factor' )
 
+AddSetting(	name="InletVelocity",
+			default=0,
+			comment='Velocity on inlet' )
+
+
 
 #=====================================================
 
@@ -140,6 +145,7 @@ AddNodeType(name="BGK",			    group="COLLISION" )
 AddNodeType(name="DefaultAlfa",     group="TEMPALFA")
 AddNodeType(name="OtherAlfa",       group="TEMPALFA")
 AddNodeType(name="PseudoWall",      group="POROUSWALL")
+AddNodeType(name="InletW",          group="INLET")
 #TODO alfa not in the group "TEMPALFA"
 
 #====================================================

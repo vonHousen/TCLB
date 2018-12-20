@@ -43,6 +43,12 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 			SetEquilibrium_g( Density*SourceTemperature1, u);
 			break;
 	}
+	switch (NodeType & NODE_INLET)
+	{
+		case NODE_InletW:
+			VelocityInlet_W();
+			break;
+	}
 
 	if ((NodeType & NODE_COLLISION))
 		CollisionEDM();
@@ -205,6 +211,24 @@ CudaDeviceFunction void     Cooling_N()             //boundary Zou He like condi
 	g[7] -= Q*density * 1.0/6.0;
 	g[8] -= Q*density * 1.0/6.0;
 
+}
+
+CudaDeviceFunction void     VelocityInlet_W()       //boundary Zou He like condition for velocity inlet on western wall
+{
+	//not correct
+	/*
+	real_t	density = getRho();
+
+	f[1] = InletVelocity*density * 2.0/3.0;
+	f[5] = InletVelocity*density * 1.0/6.0;
+	f[8] = InletVelocity*density * 1.0/6.0;
+	f[0] = 0.0;
+	f[2] = 0.0;
+	f[3] = 0.0;
+	f[4] = 0.0;
+	f[6] = 0.0;
+	f[7] = 0.0;
+	*/
 }
 
 
