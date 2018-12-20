@@ -303,7 +303,7 @@ CudaDeviceFunction vector_t   G(const real_t w, const vector_t u)       //functi
 	else if(w<0.0)
 		w_temp = 0.0;
 
-	w_temp = -pow(w_temp, 0.01);
+	w_temp = -pow(1.0-w_temp, 0.01);
 	u_temp.x *= w_temp;
 	u_temp.y *= w_temp;
 
