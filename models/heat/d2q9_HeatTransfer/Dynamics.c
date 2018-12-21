@@ -109,6 +109,11 @@ CudaDeviceFunction real_t   getW()                  //gets Porosity factor at th
 	return ( w(0,0) );
 }
 
+CudaDeviceFunction real_t   getg()                  //gets
+{
+	return ( g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0] );
+}
+
 CudaDeviceFunction vector_t getG()                  //gets acceleration vector at the current node
 {
 	vector_t    g;
@@ -147,9 +152,9 @@ CudaDeviceFunction vector_t getU()                  //gets velocity vector at th
 //======================
 
 
-CudaDeviceFunction void     BounceBack()            //bouncing back f - field
+CudaDeviceFunction void     BounceBack()            //bouncing back on walls
 {
-    real_t temp, u[2]={0.0, 0.0}, uf;
+    real_t temp, uf;
 
 	temp	= f[3];
 	f[3]	= f[1];
@@ -369,14 +374,14 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 
 	//after collision:
 	real_t      f_unforced[9]           = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] };
-	u_temp[0] = u_before_collision[0] + acceleration.x/Omega ;
-	u_temp[1] = u_before_collision[1] + acceleration.y/Omega ;
+				u_temp[0]               = u_before_collision[0] + acceleration.x/Omega ;
+				u_temp[1]               = u_before_collision[1] + acceleration.y/Omega ;
 
-	Darcy           = G( w(0,0), u_temp );
-	acceleration.x +=  + Darcy.x;
-	acceleration.y +=  + Darcy.y;
-	u[0] = u_temp[0] + acceleration.x/Omega ;
-	u[1] = u_temp[1] + acceleration.y/Omega ;
+				Darcy                   = G( w(0,0), u_temp );
+				acceleration.x          +=  Darcy.x;
+				acceleration.y          +=  Darcy.y;
+				u[0]                    = u_temp[0] + acceleration.x/Omega ;
+				u[1]                    = u_temp[1] + acceleration.y/Omega ;
 
 	SetEquilibrium_f(getRho(), u);
 
@@ -387,22 +392,66 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 	//=========== HEAT ===========
 	//saving memory by using f-variables
 
-	real_t  omega_T         = 1.0/(3* AlfaT( w(0,0) ) + 0.5),
-			g_before_collision[9] = { g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8] };
+	real_t  omega_T                 = 1.0/(3* AlfaT( w(0,0) ) + 0.5),
+			rhoT                    = g[0] + g[1] + g[2] + g[3] + g[4] + g[5] + g[6] + g[7] + g[8],
+			g_before_collision[9]   = { g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8] };
+/*
+			u_before_collision[0]   = ( g[8]-g[7]-g[6]+g[5]-g[3]+g[1] )/rhoT;
+			u_before_collision[1]   = (-g[8]-g[7]+g[6]+g[5]-g[4]+g[2] )/rhoT;
+*/
 
-
-	SetEquilibrium_g(density, u_before_collision);
+	SetEquilibrium_g(rhoT, u_before_collision);
 
 	//after collision
-	real_t      g_unforced[9]           = { g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8] };
+	real_t      g_unforced[9]       = { g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8] };
+	rhoT                            = g[0] + g[1] + g[2] + g[3] + g[4] + g[5] + g[6] + g[7] + g[8];
 
-	SetEquilibrium_g(getRho(), u);
+	SetEquilibrium_g(rhoT, u);
 
 	for(int i=0; i<9; i++) {
 		g[i] = (g_before_collision[i] - g_unforced[i]) * (1 - omega_T) + g[i];
 	}
 
-	//
+	//below another approach for g-field
+/*
+	real_t  us[2]       = { u[0], u[1] },
+			omega_T     = 1.0/(3* AlfaT( w(0,0) ) + 0.5),
+			d           = g[8] + g[7] + g[6] + g[5] + g[4] + g[3] + g[2] + g[1] + g[0],
+			R[6];
+
+	u[0]    = g[8] - g[7] - g[6] + g[5] - g[3] + g[1];
+	u[1]    = -g[8] - g[7] + g[6] + g[5] - g[4] + g[2];
+
+
+	R[0] = -g[4] - g[3] - g[2] - g[1] + ( g[8] + g[7] + g[6] + g[5] - g[0]*2. )*2.;
+	R[1] = g[8] + g[7] + g[6] + g[5] + ( -g[4] - g[3] - g[2] - g[1] + g[0]*2. )*2.;
+	R[2] = g[8] - g[7] - g[6] + g[5] + ( g[3] - g[1] )*2.;
+	R[3] = -g[8] - g[7] + g[6] + g[5] + ( g[4] - g[2] )*2.;
+	R[4] = -g[4] + g[3] - g[2] + g[1];
+	R[5] = -g[8] + g[7] - g[6] + g[5];
+
+	R[0] = R[0]*(1-omega_T) + (-2*d)*omega_T;
+	R[1] = R[1]*(1-omega_T) + (d)*omega_T;
+	R[2] = R[2]*(1-omega_T) + (-us[0]*d)*omega_T;
+	R[3] = R[3]*(1-omega_T) + (-us[1]*d)*omega_T;
+	R[4] = R[4]*(1-omega_T);
+	R[5] = R[5]*(1-omega_T);
+
+
+	u[0] = u[0]*(1-omega_T) + (us[0]*d)*omega_T;
+	u[1] = u[1]*(1-omega_T) + (us[1]*d)*omega_T;
+
+	g[0] = ( R[1] - R[0] + d )/9.;
+	g[1] = ( -R[0] + R[4]*9. + ( -R[1] + d*2. + ( -R[2] + u[0] )*3. )*2. )/36.;
+	g[2] = ( -R[0] - R[4]*9. + ( -R[1] + d*2. + ( -R[3] + u[1] )*3. )*2. )/36.;
+	g[3] = ( -R[0] + R[4]*9. + ( -R[1] + d*2. + ( R[2] - u[0] )*3. )*2. )/36.;
+	g[4] = ( -R[0] - R[4]*9. + ( -R[1] + d*2. + ( R[3] - u[1] )*3. )*2. )/36.;
+	g[5] = ( R[1] + ( R[0] + d*2. )*2. + ( R[3] + R[2] + R[5]*3. + ( u[1] + u[0] )*2. )*3. )/36.;
+	g[6] = ( R[1] + ( R[0] + d*2. )*2. + ( R[3] - R[2] - R[5]*3. + ( u[1] - u[0] )*2. )*3. )/36.;
+	g[7] = ( R[1] + ( R[0] + d*2. )*2. + ( -R[3] - R[2] + R[5]*3. + ( -u[1] - u[0] )*2. )*3. )/36.;
+	g[8] = ( R[1] + ( R[0] + d*2. )*2. + ( -R[3] + R[2] - R[5]*3. + ( -u[1] + u[0] )*2. )*3. )/36.;
+*/
+
 
 }
 

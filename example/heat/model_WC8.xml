@@ -38,7 +38,6 @@
 	</Model>
 
 	<VTK/>
-	<Solve Iterations="3000"/>
 	<Solve Iterations="3000">
 		<VTK Iterations="100"/>
 		<Log Iterations="100"/>
