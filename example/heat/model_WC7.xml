@@ -30,7 +30,7 @@
 
 	<Model>
 		<Params InitTemperature="300K"/>
-		<Params FluidAlfa="0.1"/>
+		<Params AlfaFluid="0.1"/>
 		<Params Omega="1.0"/>
 		<Params Q="1e-2"/>
 		<Params Beta="210e-6"/>
@@ -42,10 +42,11 @@
 	</Model>
 
 	<VTK/>
-	<Solve Iterations="40000">
+	<Solve Iterations="70000"/>
+	<!--Solve Iterations="40000">
 		<VTK Iterations="1000"/>
 		<Log Iterations="1000"/>
-	</Solve>
+	</Solve-->
 
 
 </CLBConfig>

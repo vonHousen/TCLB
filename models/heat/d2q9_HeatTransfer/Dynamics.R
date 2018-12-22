@@ -73,11 +73,11 @@ AddSetting(	name="InitTemperature",
 			comment='Init temperature')
 
 AddSetting(	name="AlfaFluid",
-			default=1,
+			default=0.1,
 			comment='Coefficent of heat transfer of the solid')
 
 AddSetting(	name="AlfaSolid",
-			default=1,
+			default=0.05,
 			comment='Coefficent of heat transfer of the solid')
 
 AddSetting(	name="SourceTemperature1",
