@@ -30,24 +30,24 @@
 
 	<Model>
 		<Params InitTemperature="300K"/>
-		<Params AlfaFluid="0.1"/>
+		<Params AlfaFluid="1e-1"/>
 		<Params Omega="1.0"/>
-		<Params Q="1e-2"/>
+		<Params Q="2e-2"/>
 		<Params Beta="210e-6"/>
 		<Params Tref="300K"/>
-		<!--Params G_Boussinesq_Y="-9.81m/s2"/-->
+		<Params G_Boussinesq_Y="-9.81m/s2"/>
 		<Params Ldim="0.02m"/>
 		<Params Adiffusity="0.143mm2/s"/>
 		<Params Nu_dup="1e-5m2/s"/>
 	</Model>
 
 	<VTK/>
-	<Solve Iterations="70000"/>
+	<Solve Iterations="500000"/>
 	<VTK/>
-	<!--Solve Iterations="40000">
+	<Solve Iterations="20000">
 		<VTK Iterations="1000"/>
 		<Log Iterations="1000"/>
-	</Solve-->
+	</Solve>
 
 
 </CLBConfig>
