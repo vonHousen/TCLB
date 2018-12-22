@@ -56,6 +56,18 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 	w = w(0,0);
 
 
+
+
+	switch (NodeType & NODE_GAUGE)
+	{
+		case NODE_InletGauge:
+			AddToMassFlowIn( getU().x * getRho()/1.0 );
+			break;
+		case NODE_OutletGauge:
+			AddToMassFlowOut( getU().x * getRho()/1.0 );
+			break;
+	}
+
 	AddToTotalHeat( getE() );
 	AddToTotalMass( getRho() );
 }

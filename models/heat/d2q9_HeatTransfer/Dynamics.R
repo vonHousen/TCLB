@@ -147,6 +147,9 @@ AddNodeType(name="DefaultAlfa",     group="TEMPALFA")
 AddNodeType(name="OtherAlfa",       group="TEMPALFA")
 AddNodeType(name="PseudoWall",      group="POROUSWALL")
 AddNodeType(name="InletW",          group="INLET")
+AddNodeType(name="InletGauge",      group="GAUGE")
+AddNodeType(name="OutletGauge",      group="GAUGE")
+
 #TODO alfa not in the group "TEMPALFA"
 
 #====================================================
@@ -154,3 +157,5 @@ AddNodeType(name="InletW",          group="INLET")
 
 AddGlobal(  name="TotalHeat",    comment='Energy',      unit="J" )
 AddGlobal(  name="TotalMass",    comment='Total mass',  unit="kg" )
+AddGlobal(  name="MassFlowOut",  comment='Mass flow out', unit="kg/s")
+AddGlobal(  name="MassFlowIn",  comment='Mass flow in', unit="kg/s")

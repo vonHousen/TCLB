@@ -18,9 +18,17 @@
 			<Box dy="-1" ny="1"/>
 		</Wall>
 
-		<PseudoWall>
+		<!--PseudoWall>
 			<Box dx="0.019m" nx="0.002m" dy="0" ny="0.002m"/>
-		</PseudoWall>
+		</PseudoWall-->
+
+		<InletGauge>
+			<Box dx="0" nx="1"/>
+		</InletGauge>
+
+		<OutletGauge>
+			<Box dx="-1" nx="1"/>
+		</OutletGauge>
 
 	</Geometry>
 
