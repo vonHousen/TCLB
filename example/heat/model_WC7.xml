@@ -43,6 +43,7 @@
 
 	<VTK/>
 	<Solve Iterations="70000"/>
+	<VTK/>
 	<!--Solve Iterations="40000">
 		<VTK Iterations="1000"/>
 		<Log Iterations="1000"/>
