@@ -19,7 +19,7 @@ AddDensity( name="g[6]", dx=-1, dy= 1, group="g")
 AddDensity( name="g[7]", dx=-1, dy=-1, group="g")
 AddDensity( name="g[8]", dx= 1, dy=-1, group="g")
 
-AddField("w", stencil2d=1, group="w")
+AddDensity( name="w", group="w", parameter=T )
 
 #=====================================================
 
@@ -33,6 +33,7 @@ AddQuantity(name="Pr")
 AddQuantity(name="Ra")
 AddQuantity(name="W")
 AddQuantity(name="g")
+#AddQuantity( name="RhoB", adjoint=T)
 
 
 #=====================================================
@@ -158,4 +159,5 @@ AddNodeType(name="OutletGauge",      group="GAUGE")
 AddGlobal(  name="TotalHeat",    comment='Energy',      unit="J" )
 AddGlobal(  name="TotalMass",    comment='Total mass',  unit="kg" )
 AddGlobal(  name="MassFlowOut",  comment='Mass flow out', unit="kg/s")
-AddGlobal(  name="MassFlowIn",  comment='Mass flow in', unit="kg/s")
+AddGlobal(  name="MassFlowIn",   comment='Mass flow in', unit="kg/s")
+AddGlobal(  name="Penalty",      comment='Porosity penalty function')

@@ -6,7 +6,7 @@ CudaDeviceFunction void     Init()                  //initialising function - us
 			rhoT     = density*InitTemperature,
 			w_init   = 1.0;
 
-	if(IamWall)
+	if((NodeType & NODE_BOUNDARY) == NODE_Wall)
 	{
 		u[0]    = 0.0;
 		u[1]    = 0.0;
@@ -53,9 +53,6 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 	if ((NodeType & NODE_COLLISION))
 		CollisionEDM();
 
-	w = w(0,0);
-
-
 
 
 	switch (NodeType & NODE_GAUGE)
@@ -70,6 +67,7 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 
 	AddToTotalHeat( getE() );
 	AddToTotalMass( getRho() );
+	AddToPenalty( w*(1-w) );
 }
 
 CudaDeviceFunction float2   Color()                 //does nothing - no CUDA
@@ -118,7 +116,7 @@ CudaDeviceFunction real_t   getE()                  //gets Energy at the current
 
 CudaDeviceFunction real_t   getW()                  //gets Porosity factor at the current node.
 {
-	return ( w(0,0) );
+	return ( w );
 }
 
 CudaDeviceFunction real_t   getg()                  //gets
@@ -389,7 +387,7 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 				u_temp[0]               = u_before_collision[0] + acceleration.x/Omega ;
 				u_temp[1]               = u_before_collision[1] + acceleration.y/Omega ;
 
-				Darcy                   = G( w(0,0), u_temp );
+				Darcy                   = G( w, u_temp );
 				acceleration.x          +=  Darcy.x;
 				acceleration.y          +=  Darcy.y;
 				u[0]                    = u_temp[0] + acceleration.x/Omega ;
