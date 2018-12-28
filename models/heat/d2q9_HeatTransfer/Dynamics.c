@@ -27,6 +27,9 @@ CudaDeviceFunction void     Init()                  //initialising function - us
 
 CudaDeviceFunction void     Run()                   //main function - acts every iteration
 {
+	real_t      u[2];
+
+
 	if ( (NodeType & NODE_BOUNDARY) == NODE_Wall )
 		BounceBack();
 
@@ -39,8 +42,9 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 			Cooling_N();
 			break;
 		case NODE_Heater:
-			real_t u[2]     = {0.0, 0.0};
-			SetEquilibrium_g( Density*SourceTemperature1, u);
+			u[0] = 0.0;
+			u[1] = 0.0;
+			SetEquilibrium_g( getRho()*SourceTemperature1, u);
 			break;
 	}
 	switch (NodeType & NODE_INLET)
@@ -50,7 +54,7 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 			break;
 	}
 
-	if ((NodeType & NODE_COLLISION))
+	if ((NodeType & NODE_COLLISION) == NODE_BGK )
 		CollisionEDM();
 
 
@@ -58,10 +62,10 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 	switch (NodeType & NODE_GAUGE)
 	{
 		case NODE_InletGauge:
-			AddToMassFlowIn( getU().x * getRho()/1.0 );
+			AddToMassFlowIn(  u_x() * getRho()/1.0 );
 			break;
 		case NODE_OutletGauge:
-			AddToMassFlowOut( getU().x * getRho()/1.0 );
+			AddToMassFlowOut( u_x() * getRho()/1.0 );
 			break;
 	}
 
@@ -73,8 +77,8 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 CudaDeviceFunction float2   Color()                 //does nothing - no CUDA
 {
 	float2 ret;
-	ret.x = (getT()-Tref)/Tref;
-	ret.y = 1;
+	ret.x = (float)((getT()-Tref)/Tref);
+	ret.y = (float)1;
 
 	return ret;
 }
@@ -94,7 +98,7 @@ CudaDeviceFunction real_t   getGr()                 //gets value of Grashof numb
 	real_t  g = sqrt(G_Boussinesq_X*G_Boussinesq_X + G_Boussinesq_Y*G_Boussinesq_Y),
 			nu = Nu_dup;
 
-	return ( (1/Tref) * fabs(getT() - Tref) * (g*Ldim*Ldim*Ldim)/(nu*nu) );
+	return ( (1/Tref) * (getT() - Tref) * (g*Ldim*Ldim*Ldim)/(nu*nu) );
 }
 
 CudaDeviceFunction real_t   getPr()                 //gets value of Prandtl number at the current node.
@@ -119,41 +123,24 @@ CudaDeviceFunction real_t   getW()                  //gets Porosity factor at th
 	return ( w );
 }
 
-CudaDeviceFunction real_t   getg()                  //gets
-{
-	return ( g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0] );
-}
-
 CudaDeviceFunction vector_t getG()                  //gets acceleration vector at the current node
 {
 	vector_t    g;
 
-	real_t 		density = getRho(),
-	            t       = getT();
-
-	g.x     = G_X - (1/Tref) * G_Boussinesq_X * (t - Tref);
-	g.y     = G_Y - (1/Tref) * G_Boussinesq_Y * (t - Tref);
+	g.x     = acceleration_x();
+	g.y     = acceleration_y();
+	g.z     = 0.0;
 
 	return g;
 }
 
 CudaDeviceFunction vector_t getU()                  //gets velocity vector at the current node
 {
-	real_t 		density = getRho();
-	vector_t 	u,
-				g = getG();
+	vector_t 	u;
 
-	if(not IamWall)
-	{
-		// pu' = pu + G/2
-		u.x = (( f[8] - f[7] - f[6] + f[5] - f[3] + f[1]) / density + g.x * 0.5);
-		u.y = ((-f[8] - f[7] + f[6] + f[5] - f[4] + f[2]) / density + g.y * 0.5);
-		u.z = 0.0;
-	}
-	else
-	{
-		u.x = u.y = u.z = 0.0;
-	}
+	u.x = u_x();
+	u.y = u_y();
+	u.z = 0.0;
 
 	return u;
 }
@@ -250,29 +237,40 @@ CudaDeviceFunction void     VelocityInlet_W()       //boundary Zou He like condi
 //======================
 
 													//calculates the equilibrium distribution of field
-CudaDeviceFunction void     SetEquilibrium_f(const real_t density, const real_t *u)
+CudaDeviceFunction void     SetEquilibrium_f(real_t density, real_t u[2])
 {
 	//  relaxation factor
-	real_t  S[9] =  { 4.0 /  9.0,
-					  1.0 /  9.0,
-					  1.0 /  9.0,
-					  1.0 /  9.0,
-					  1.0 /  9.0,
-					  1.0 / 36.0,
-					  1.0 / 36.0,
-					  1.0 / 36.0,
-					  1.0 / 36.0  };
+	real_t  S[9];
+			S[0] = (4.0 /  9.0);
+			S[1] = (1.0 /  9.0);
+			S[2] = (1.0 /  9.0);
+			S[3] = (1.0 /  9.0);
+			S[4] = (1.0 /  9.0);
+			S[5] = (1.0 / 36.0);
+			S[6] = (1.0 / 36.0);
+			S[7] = (1.0 / 36.0);
+			S[8] = (1.0 / 36.0);
 
 	//d2q9 - 9 lattice directions
-	real_t  c[9][2] = {  { 0.0, 0.0},
-                         { 1.0, 0.0},
-                         { 0.0, 1.0},
-                         {-1.0, 0.0},
-                         { 0.0,-1.0},
-                         { 1.0, 1.0},
-                         {-1.0, 1.0},
-                         {-1.0,-1.0},
-                         { 1.0,-1.0}  };
+	real_t  c[9][2];
+			c[0][0] =  0.0;
+			c[0][1] =  0.0;
+			c[1][0] =  1.0;
+			c[1][1] =  0.0;
+			c[2][0] =  0.0;
+			c[2][1] =  1.0;
+			c[3][0] = -1.0;
+			c[3][1] =  0.0;
+			c[4][0] =  0.0;
+			c[4][1] = -1.0;
+			c[5][0] =  1.0;
+			c[5][1] =  1.0;
+			c[6][0] = -1.0;
+			c[6][1] =  1.0;
+			c[7][0] = -1.0;
+			c[7][1] = -1.0;
+			c[8][0] =  1.0;
+			c[8][1] = -1.0;
 
 	real_t cu_temp, u2_temp;      //cu_temp = c*u, u2_temp = u^2
 	real_t c2_s = 1.0 / 3.0;      //c2_s = c_s^2 <==> lattice speed of sound
@@ -291,29 +289,40 @@ CudaDeviceFunction void     SetEquilibrium_f(const real_t density, const real_t 
 }
 
 													//calculates the equilibrium distribution of g - field
-CudaDeviceFunction void     SetEquilibrium_g(const real_t rhoT, const real_t u[2])
+CudaDeviceFunction void     SetEquilibrium_g(real_t rhoT, real_t u[2])
 {
-	//  relaxation factor
-	real_t  S[9] =  { 4.0 /  9.0,
-	                  1.0 /  9.0,
-	                  1.0 /  9.0,
-	                  1.0 /  9.0,
-	                  1.0 /  9.0,
-	                  1.0 / 36.0,
-	                  1.0 / 36.0,
-	                  1.0 / 36.0,
-	                  1.0 / 36.0  };
+//  relaxation factor
+real_t  S[9];
+		S[0] = (4.0 /  9.0);
+		S[1] = (1.0 /  9.0);
+		S[2] = (1.0 /  9.0);
+		S[3] = (1.0 /  9.0);
+		S[4] = (1.0 /  9.0);
+		S[5] = (1.0 / 36.0);
+		S[6] = (1.0 / 36.0);
+		S[7] = (1.0 / 36.0);
+		S[8] = (1.0 / 36.0);
 
-	//d2q9 - 9 lattice directions
-	real_t  c[9][2] = {  { 0.0, 0.0},
-	                     { 1.0, 0.0},
-	                     { 0.0, 1.0},
-	                     {-1.0, 0.0},
-	                     { 0.0,-1.0},
-	                     { 1.0, 1.0},
-	                     {-1.0, 1.0},
-	                     {-1.0,-1.0},
-	                     { 1.0,-1.0}  };
+//d2q9 - 9 lattice directions
+real_t  c[9][2];
+		c[0][0] =  0.0;
+		c[0][1] =  0.0;
+		c[1][0] =  1.0;
+		c[1][1] =  0.0;
+		c[2][0] =  0.0;
+		c[2][1] =  1.0;
+		c[3][0] = -1.0;
+		c[3][1] =  0.0;
+		c[4][0] =  0.0;
+		c[4][1] = -1.0;
+		c[5][0] =  1.0;
+		c[5][1] =  1.0;
+		c[6][0] = -1.0;
+		c[6][1] =  1.0;
+		c[7][0] = -1.0;
+		c[7][1] = -1.0;
+		c[8][0] =  1.0;
+		c[8][1] = -1.0;
 
 	real_t cu_temp, u2_temp;      //cu_temp = c*u, u2_temp = u^2
 	real_t c2_s = 1.0 / 3.0;      //c2_s = c_s^2 <==> lattice speed of sound
@@ -331,14 +340,11 @@ CudaDeviceFunction void     SetEquilibrium_g(const real_t rhoT, const real_t u[2
 	}
 }
 
-
-CudaDeviceFunction vector_t   G(const real_t w, const real_t* u)       //function for calculating Darcy's acceler.
+													//returns Darcy's acceleration on one direction
+CudaDeviceFunction real_t    G_darcy(real_t w, real_t u)
 {
-	real_t      w_temp = w;
-	vector_t    u_temp;
-
-	u_temp.x = u[0];
-	u_temp.y = u[1];
+	real_t      w_temp  = w,
+				g       = u;
 
 	if(w > 1.0)
 		w_temp = 1.0;
@@ -346,13 +352,58 @@ CudaDeviceFunction vector_t   G(const real_t w, const real_t* u)       //functio
 		w_temp = 0.0;
 
 	w_temp = -pow(1.0-w_temp, 0.01);
-	u_temp.x *= w_temp;
-	u_temp.y *= w_temp;
+	g *= w_temp;
 
-	return u_temp;
+	return g;
 }
 
-CudaDeviceFunction real_t   AlfaT(const real_t w)   //function for interpolating AlfaT
+CudaDeviceFunction real_t   acceleration_x()    //returns acceleration_x
+{
+	return ( G_X - (1/Tref) * G_Boussinesq_X * (getT() - Tref) );
+}
+
+
+CudaDeviceFunction real_t   acceleration_y()    //returns acceleration_y
+{
+	return ( G_Y - (1/Tref) * G_Boussinesq_Y * (getT() - Tref) );
+}
+
+
+CudaDeviceFunction real_t   u_x()             //returns velocity_x
+{
+	real_t 		u;
+
+	if( ((NodeType & NODE_BOUNDARY) == NODE_Wall) )
+	{
+		u = 0.0;
+	}
+	else
+	{
+		u = (( f[8] - f[7] - f[6] + f[5] - f[3] + f[1]) / getRho() + acceleration_x() * 0.5);
+	}
+
+	return u;
+}
+
+
+CudaDeviceFunction real_t   u_y()             //returns velocity_y
+{
+	real_t 		u;
+
+	if( ((NodeType & NODE_BOUNDARY) == NODE_Wall) )
+	{
+		u = 0.0;
+	}
+	else
+	{
+		u = ((-f[8] - f[7] + f[6] + f[5] - f[4] + f[2]) / getRho() + acceleration_y() * 0.5);
+	}
+
+	return u;
+}
+
+
+CudaDeviceFunction real_t   AlfaT(real_t w)     //function for interpolating AlfaT
 {
 	real_t alfa;
 
@@ -367,31 +418,36 @@ CudaDeviceFunction real_t   AlfaT(const real_t w)   //function for interpolating
 	return alfa;
 }
 
-CudaDeviceFunction void     CollisionEDM()          //physics of the collision (based on Exact Difference Method)
+
+CudaDeviceFunction void     CollisionEDM()      //physics of the collision (based on Exact Difference Method)
 {
 	//before collision:
-	real_t      density                 = getRho(),
-                u_before_collision[2]   = { (( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density ),
-	                                        ((-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density )  },
-				f_before_collision[9]   = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] },
+	real_t      density                 = getRho();
+	real_t      u_before_collision[2],
+				f_before_collision[9],
 				u_temp[2],
-				u[2];
-	vector_t    acceleration            = getG(),
-				Darcy;
+				u[2],
+				acceleration[2];
+				acceleration[0] = acceleration_x();
+				acceleration[1] = acceleration_y();
+	for(int i=0; i<9; i++)      f_before_collision[i] = f[i];
 
+	u_before_collision[0] = ( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density;
+	u_before_collision[1] = (-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density;
 
 	SetEquilibrium_f(density, u_before_collision);
 
 	//after collision:
-	real_t      f_unforced[9]           = { f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8] };
-				u_temp[0]               = u_before_collision[0] + acceleration.x/Omega ;
-				u_temp[1]               = u_before_collision[1] + acceleration.y/Omega ;
+	real_t      f_unforced[9];
 
-				Darcy                   = G( w, u_temp );
-				acceleration.x          +=  Darcy.x;
-				acceleration.y          +=  Darcy.y;
-				u[0]                    = u_temp[0] + acceleration.x/Omega ;
-				u[1]                    = u_temp[1] + acceleration.y/Omega ;
+	for(int i=0; i<9; i++)      f_unforced[i]   = f[i];
+	for(int i=0; i<2; i++)      u_temp[i]       = u_before_collision[i] + acceleration[i]/Omega ;
+
+
+	acceleration[0]        +=  G_darcy(w, u_temp[0]);
+	acceleration[1]        +=  G_darcy(w, u_temp[1]);
+	u[0]                    = u_temp[0] + acceleration[0]/Omega ;
+	u[1]                    = u_temp[1] + acceleration[1]/Omega ;
 
 	SetEquilibrium_f(getRho(), u);
 
@@ -402,15 +458,17 @@ CudaDeviceFunction void     CollisionEDM()          //physics of the collision (
 	//=========== HEAT ===========
 	//saving memory by using f-variables
 
-	real_t  omega_T                 = 1.0/(3* AlfaT( w(0,0) ) + 0.5),
+	real_t  omega_T                 = 1.0/(3* AlfaT( w ) + 0.5),
 			rhoT                    = g[0] + g[1] + g[2] + g[3] + g[4] + g[5] + g[6] + g[7] + g[8],
-			g_before_collision[9]   = { g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8] };
+			g_before_collision[9];
 
+	for(int i=0; i<9; i++)      g_before_collision[i] = g[i];
 	SetEquilibrium_g(rhoT, u_before_collision);
 
 	//after collision
-	real_t      g_unforced[9]       = { g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8] };
-	rhoT                            = g[0] + g[1] + g[2] + g[3] + g[4] + g[5] + g[6] + g[7] + g[8];
+	real_t                      g_unforced[9];
+	for(int i=0; i<9; i++)      g_unforced[i]   = g[i];
+	rhoT = g[0] + g[1] + g[2] + g[3] + g[4] + g[5] + g[6] + g[7] + g[8];
 
 	SetEquilibrium_g(rhoT, u);
 

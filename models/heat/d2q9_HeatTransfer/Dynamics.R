@@ -27,12 +27,12 @@ AddDensity( name="w", group="w", parameter=T )
 AddQuantity(name="Rho",	unit="kg/m3")
 AddQuantity(name="T",	unit="K")
 AddQuantity(name="U",	unit="m/s",	vector=T)
+AddQuantity(name="G",	unit="m/s2", vector=T)
 AddQuantity(name="E",	unit="J/m3")
 AddQuantity(name="Gr")
 AddQuantity(name="Pr")
 AddQuantity(name="Ra")
 AddQuantity(name="W")
-AddQuantity(name="g")
 #AddQuantity( name="RhoB", adjoint=T)
 
 
