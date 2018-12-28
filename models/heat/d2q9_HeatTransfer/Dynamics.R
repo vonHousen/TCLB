@@ -33,7 +33,7 @@ AddQuantity(name="Gr")
 AddQuantity(name="Pr")
 AddQuantity(name="Ra")
 AddQuantity(name="W")
-#AddQuantity( name="RhoB", adjoint=T)
+AddQuantity( name="RhoB", adjoint=T)
 
 
 #=====================================================
