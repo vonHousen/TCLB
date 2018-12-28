@@ -341,7 +341,7 @@ real_t  c[9][2];
 }
 
 													//returns Darcy's acceleration on one direction
-CudaDeviceFunction real_t    G_darcy(real_t w, real_t u)
+CudaDeviceFunction real_t   G_darcy(real_t w, real_t u)
 {
 	real_t      w_temp  = w,
 				g       = u;
@@ -369,7 +369,7 @@ CudaDeviceFunction real_t   acceleration_y()    //returns acceleration_y
 }
 
 
-CudaDeviceFunction real_t   u_x()             //returns velocity_x
+CudaDeviceFunction real_t   u_x()               //returns velocity_x
 {
 	real_t 		u;
 
@@ -386,7 +386,7 @@ CudaDeviceFunction real_t   u_x()             //returns velocity_x
 }
 
 
-CudaDeviceFunction real_t   u_y()             //returns velocity_y
+CudaDeviceFunction real_t   u_y()               //returns velocity_y
 {
 	real_t 		u;
 
