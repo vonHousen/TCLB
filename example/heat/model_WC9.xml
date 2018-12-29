@@ -67,12 +67,20 @@
 	</Model>
 
 	<VTK/>
-	<Solve Iterations="20000">
-		<VTK Iterations="1000"/>
-		<Log Iterations="1000"/>
-	</Solve>
+	<Solve Iterations="20000"/>
 
-	<OptSolve Iterations="1000"/>
 	<VTK/>
+	<Log/>
 
+	<OptSolve Iterations="10000"/>
+	<VTK/>
+	<Log/>
+
+	<OptSolve Iterations="100000"/>
+	<VTK/>
+	<Log/>
+
+	<OptSolve Iterations="200000"/>
+	<VTK/>
+	<Log/>
 </CLBConfig>
