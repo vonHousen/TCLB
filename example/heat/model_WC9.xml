@@ -67,12 +67,10 @@
 	</Model>
 
 	<VTK/>
-	<Log/>
-	<Solve Iterations="20000"/>
+	<Solve Iterations="70000"/>
 	<VTK/>
-	<Log/>
 
-	<Params Descent="0.3"/>
+	<Params Descent="1000"/>
 	<OptSolve Iterations="200000">
 		<Log Iterations="10000"/>
 		<VTK Iterations="10000"/>
