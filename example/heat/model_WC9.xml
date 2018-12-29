@@ -64,13 +64,15 @@
 		<Params Adiffusity="0.143mm2/s"/>
 		<Params Nu_dup="1e-5m2/s"/>
 		<Params MassFlowOutInObj="1.0"/>
-		<Params Descent="0.3"/>
 	</Model>
 
 	<VTK/>
+	<Log/>
 	<Solve Iterations="20000"/>
 	<VTK/>
+	<Log/>
 
+	<Params Descent="0.3"/>
 	<OptSolve Iterations="200000">
 		<Log Iterations="10000"/>
 		<VTK Iterations="10000"/>
