@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC8_5/">
+<CLBConfig version="2.0" output="output/WC8_6/">
 
 	<Units>
 		<Params Size="1e-4m"        gauge="1"/>
@@ -18,9 +18,9 @@
 			<Box dy="-1" ny="1"/>
 		</Wall>
 
-		<!--PseudoWall>
-			<Box dx="0.019m" nx="0.002m" dy="0" ny="0.002m"/>
-		</PseudoWall-->
+		<PseudoWall>
+			<Box dx="0.015m" nx="0.01m" dy="0"       ny="0.003m"/>
+		</PseudoWall>
 
 		<InletGauge>
 			<Box dx="0" nx="1"/>
@@ -40,15 +40,17 @@
 		<Params Omega="1.0"/>
 		<Params Tref="300K"/>
 		<Params Nu_dup="1e-5m2/s"/>
-		<Params W_init="0.9"/>
+		<Params W_init="0.5"/>
+		<Params G_X="0.003m/s2"/>
 	</Model>
 
 	<VTK/>
 	<Solve Iterations="3000"/>
-	<Solve Iterations="3000">
+	<VTK/>
+	<!--Solve Iterations="3000">
 		<VTK Iterations="100"/>
 		<Log Iterations="100"/>
-	</Solve>
+	</Solve-->
 
 
 </CLBConfig>
