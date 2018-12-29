@@ -239,6 +239,8 @@ CudaDeviceFunction void     VelocityInlet_W()       //boundary Zou He like condi
 													//calculates the equilibrium distribution of field
 CudaDeviceFunction void     SetEquilibrium_f(real_t density, real_t u[2])
 {
+	int i=0;
+
 	//  relaxation factor
 	real_t  S[9];
 			S[0] = (4.0 /  9.0);
@@ -278,7 +280,7 @@ CudaDeviceFunction void     SetEquilibrium_f(real_t density, real_t u[2])
 
 
 
-	for(int i=0; i<9; i++)
+	for(i=0; i<9; i++)
 	{
 		cu_temp = c[i][0]*u[0] + c[i][1]*u[1];
 		u2_temp = u[0]*u[0] + u[1]*u[1];
@@ -291,38 +293,40 @@ CudaDeviceFunction void     SetEquilibrium_f(real_t density, real_t u[2])
 													//calculates the equilibrium distribution of g - field
 CudaDeviceFunction void     SetEquilibrium_g(real_t rhoT, real_t u[2])
 {
-//  relaxation factor
-real_t  S[9];
-		S[0] = (4.0 /  9.0);
-		S[1] = (1.0 /  9.0);
-		S[2] = (1.0 /  9.0);
-		S[3] = (1.0 /  9.0);
-		S[4] = (1.0 /  9.0);
-		S[5] = (1.0 / 36.0);
-		S[6] = (1.0 / 36.0);
-		S[7] = (1.0 / 36.0);
-		S[8] = (1.0 / 36.0);
+	int i=0;
 
-//d2q9 - 9 lattice directions
-real_t  c[9][2];
-		c[0][0] =  0.0;
-		c[0][1] =  0.0;
-		c[1][0] =  1.0;
-		c[1][1] =  0.0;
-		c[2][0] =  0.0;
-		c[2][1] =  1.0;
-		c[3][0] = -1.0;
-		c[3][1] =  0.0;
-		c[4][0] =  0.0;
-		c[4][1] = -1.0;
-		c[5][0] =  1.0;
-		c[5][1] =  1.0;
-		c[6][0] = -1.0;
-		c[6][1] =  1.0;
-		c[7][0] = -1.0;
-		c[7][1] = -1.0;
-		c[8][0] =  1.0;
-		c[8][1] = -1.0;
+	//  relaxation factor
+	real_t  S[9];
+			S[0] = (4.0 /  9.0);
+			S[1] = (1.0 /  9.0);
+			S[2] = (1.0 /  9.0);
+			S[3] = (1.0 /  9.0);
+			S[4] = (1.0 /  9.0);
+			S[5] = (1.0 / 36.0);
+			S[6] = (1.0 / 36.0);
+			S[7] = (1.0 / 36.0);
+			S[8] = (1.0 / 36.0);
+
+	//d2q9 - 9 lattice directions
+	real_t  c[9][2];
+			c[0][0] =  0.0;
+			c[0][1] =  0.0;
+			c[1][0] =  1.0;
+			c[1][1] =  0.0;
+			c[2][0] =  0.0;
+			c[2][1] =  1.0;
+			c[3][0] = -1.0;
+			c[3][1] =  0.0;
+			c[4][0] =  0.0;
+			c[4][1] = -1.0;
+			c[5][0] =  1.0;
+			c[5][1] =  1.0;
+			c[6][0] = -1.0;
+			c[6][1] =  1.0;
+			c[7][0] = -1.0;
+			c[7][1] = -1.0;
+			c[8][0] =  1.0;
+			c[8][1] = -1.0;
 
 	real_t cu_temp, u2_temp;      //cu_temp = c*u, u2_temp = u^2
 	real_t c2_s = 1.0 / 3.0;      //c2_s = c_s^2 <==> lattice speed of sound
@@ -330,7 +334,7 @@ real_t  c[9][2];
 
 
 
-	for(int i=0; i<9; i++)
+	for(i=0; i<9; i++)
 	{
 		cu_temp = c[i][0]*u[0] + c[i][1]*u[1];
 		u2_temp = u[0]*u[0] + u[1]*u[1];
@@ -351,7 +355,7 @@ CudaDeviceFunction real_t   G_darcy(real_t w, real_t u)
 	else if(w<0.0)
 		w_temp = 0.0;
 
-	w_temp = -pow(1.0-w_temp, 0.01);
+	w_temp = (-1.0)*exp(1000.0*(w_temp-1.0));
 	g *= w_temp;
 
 	return g;
@@ -422,6 +426,7 @@ CudaDeviceFunction real_t   AlfaT(real_t w)     //function for interpolating Alf
 CudaDeviceFunction void     CollisionEDM()      //physics of the collision (based on Exact Difference Method)
 {
 	//before collision:
+	int i=0;
 	real_t      density                 = getRho();
 	real_t      u_before_collision[2],
 				f_before_collision[9],
@@ -430,7 +435,7 @@ CudaDeviceFunction void     CollisionEDM()      //physics of the collision (base
 				acceleration[2];
 				acceleration[0] = acceleration_x();
 				acceleration[1] = acceleration_y();
-	for(int i=0; i<9; i++)      f_before_collision[i] = f[i];
+	for(i=0; i<9; i++)      f_before_collision[i] = f[i];
 
 	u_before_collision[0] = ( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density;
 	u_before_collision[1] = (-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density;
@@ -440,8 +445,8 @@ CudaDeviceFunction void     CollisionEDM()      //physics of the collision (base
 	//after collision:
 	real_t      f_unforced[9];
 
-	for(int i=0; i<9; i++)      f_unforced[i]   = f[i];
-	for(int i=0; i<2; i++)      u_temp[i]       = u_before_collision[i] + acceleration[i]/Omega ;
+	for(i=0; i<9; i++)      f_unforced[i]   = f[i];
+	for(i=0; i<2; i++)      u_temp[i]       = u_before_collision[i] + acceleration[i]/Omega ;
 
 
 	acceleration[0]        +=  G_darcy(w, u_temp[0]);
@@ -451,7 +456,7 @@ CudaDeviceFunction void     CollisionEDM()      //physics of the collision (base
 
 	SetEquilibrium_f(getRho(), u);
 
-	for(int i=0; i<9; i++) {
+	for(i=0; i<9; i++) {
 		f[i] = (f_before_collision[i] - f_unforced[i]) * (1 - Omega) + f[i];
 	}
 
@@ -462,17 +467,17 @@ CudaDeviceFunction void     CollisionEDM()      //physics of the collision (base
 			rhoT                    = g[0] + g[1] + g[2] + g[3] + g[4] + g[5] + g[6] + g[7] + g[8],
 			g_before_collision[9];
 
-	for(int i=0; i<9; i++)      g_before_collision[i] = g[i];
+	for(i=0; i<9; i++)      g_before_collision[i] = g[i];
 	SetEquilibrium_g(rhoT, u_before_collision);
 
 	//after collision
 	real_t                      g_unforced[9];
-	for(int i=0; i<9; i++)      g_unforced[i]   = g[i];
+	for(i=0; i<9; i++)      g_unforced[i]   = g[i];
 	rhoT = g[0] + g[1] + g[2] + g[3] + g[4] + g[5] + g[6] + g[7] + g[8];
 
 	SetEquilibrium_g(rhoT, u);
 
-	for(int i=0; i<9; i++) {
+	for(i=0; i<9; i++) {
 		g[i] = (g_before_collision[i] - g_unforced[i]) * (1 - omega_T) + g[i];
 	}
 

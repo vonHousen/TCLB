@@ -33,9 +33,9 @@ AddQuantity(name="Gr")
 AddQuantity(name="Pr")
 AddQuantity(name="Ra")
 AddQuantity(name="W")
-AddQuantity( name="RhoB",   adjoint=T)
-AddQuantity( name="WB",     adjoint=T)
-AddQuantity( name="TB",     adjoint=T)
+#AddQuantity( name="RhoB",   adjoint=T)
+#AddQuantity( name="WB",     adjoint=T)
+#AddQuantity( name="TB",     adjoint=T)
 
 
 #=====================================================
@@ -72,7 +72,7 @@ AddSetting( name="G_Y",
 			comment='Acceleration y')
 
 AddSetting(	name="InitTemperature",
-			default=1,
+			default=300,
 			comment='Init temperature')
 
 AddSetting(	name="AlfaFluid",
@@ -104,7 +104,7 @@ AddSetting(	name="Beta",
 			comment='Coefficent of heat expansion' )
 
 AddSetting(	name="Tref",
-			default=0,
+			default=300,
 			comment='Reference temperat. for Boussinesq aprox' )
 
 AddSetting(	name="Ldim",
