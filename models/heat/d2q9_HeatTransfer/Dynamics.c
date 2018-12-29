@@ -384,8 +384,9 @@ CudaDeviceFunction real_t   G_darcy(real_t w, real_t u)
 
 CudaDeviceFunction real_t   acceleration_x()    //returns acceleration_x
 {
+	real_t  t = getT();
 	real_t 	u_temp,
-			acceleration_with_no_darcy = ( G_X - G_Boussinesq_X*(getT() - Tref)/Tref );
+			acceleration_with_no_darcy = ( G_X - G_Boussinesq_X*(t - Tref)/Tref );
 
 
 	if( ((NodeType & NODE_BOUNDARY) == NODE_Wall) )
@@ -394,14 +395,15 @@ CudaDeviceFunction real_t   acceleration_x()    //returns acceleration_x
 		u_temp = (( f8 - f7 - f6 + f5 - f3 + f1) / getRho() + acceleration_with_no_darcy * 0.5);
 
 
-	return ( G_X - G_Boussinesq_X*(getT() - Tref)/Tref - G_darcy(w, u_temp) );
+	return ( G_X - G_Boussinesq_X*(t - Tref)/Tref - G_darcy(w, u_temp) );
 }
 
 
 CudaDeviceFunction real_t   acceleration_y()    //returns acceleration_y
 {
+	real_t  t = getT();
 	real_t 	u_temp,
-			acceleration_with_no_darcy = ( G_X - G_Boussinesq_X*(getT() - Tref)/Tref );
+			acceleration_with_no_darcy = ( G_X - G_Boussinesq_X*(t - Tref)/Tref );
 
 
 	if( ((NodeType & NODE_BOUNDARY) == NODE_Wall) )
@@ -410,7 +412,7 @@ CudaDeviceFunction real_t   acceleration_y()    //returns acceleration_y
 		u_temp = ((-f8 - f7 + f6 + f5 - f4 + f2) / getRho() + acceleration_with_no_darcy * 0.5);
 
 
-	return ( G_Y - G_Boussinesq_Y*(getT() - Tref)/Tref - G_darcy(w, u_temp) );
+	return ( G_Y - G_Boussinesq_Y*(t - Tref)/Tref - G_darcy(w, u_temp) );
 }
 
 
