@@ -85,12 +85,12 @@ CudaDeviceFunction float2   Color()                 //does nothing - no CUDA
 
 CudaDeviceFunction real_t   getRho()                //gets density at the current node.
 {
-    return ( f[8]+f[7]+f[6]+f[5]+f[4]+f[3]+f[2]+f[1]+f[0] );
+    return ( f8+f7+f6+f5+f4+f3+f2+f1+f0 );
 }
 
 CudaDeviceFunction real_t   getT()                  //gets temperature at the current node.
 {
-    return ( g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0] )/getRho();
+    return ( g8+g7+g6+g5+g4+g3+g2+g1+g0 )/getRho();
 }
 
 CudaDeviceFunction real_t   getGr()                 //gets value of Grashof number at the current node.
@@ -115,7 +115,7 @@ CudaDeviceFunction real_t   getRa()                 //gets value of Rayleigh num
 
 CudaDeviceFunction real_t   getE()                  //gets Energy at the current node.
 {
-	return ( g[8]+g[7]+g[6]+g[5]+g[4]+g[3]+g[2]+g[1]+g[0] );
+	return ( getT()*getRho() );
 }
 
 CudaDeviceFunction real_t   getW()                  //gets Porosity factor at the current node.
@@ -153,21 +153,21 @@ CudaDeviceFunction void     BounceBack()            //bouncing back on walls
 {
     real_t temp, uf;
 
-	temp	= f[3];
-	f[3]	= f[1];
-	f[1]	= temp;
+	temp	= f3;
+	f3	    = f1;
+	f1	    = temp;
 	
-	temp 	= f[4];
-	f[4]	= f[2];
-	f[2]	= temp;
+	temp 	= f4;
+	f4	    = f2;
+	f2	    = temp;
 
-	temp 	= f[7];
-	f[7]	= f[5];
-	f[5]	= temp;
+	temp 	= f7;
+	f7	    = f5;
+	f5	    = temp;
 
-	temp 	= f[8];
-	f[8]	= f[6];
-	f[6]	= temp;
+	temp 	= f8;
+	f8	    = f6;
+	f6	    = temp;
 
 	// 0 1 2 3 4 5 6 7 8
 	// 1 5 2 6 3 7 4 8 0
@@ -176,21 +176,21 @@ CudaDeviceFunction void     BounceBack()            //bouncing back on walls
 	//SetEquilibrium_g(getRho()*SourceTemperature, u);
 
 	//adiabatic wall
-	uf 		= g[3];
-	g[3]	= g[1];
-	g[1]	= uf;
+	uf 		= g3;
+	g3  	= g1;
+	g1  	= uf;
 
-	uf 		= g[4];
-	g[4]	= g[2];
-	g[2]	= uf;
+	uf 		= g4;
+	g4	    = g2;
+	g2	    = uf;
 
-	uf 		= g[7];
-	g[7]	= g[5];
-	g[5]	= uf;
+	uf 		= g7;
+	g7	    = g5;
+	g5  	= uf;
 
-	uf 		= g[8];
-	g[8]	= g[6];
-	g[6]	= uf;
+	uf 		= g8;
+	g8	    = g6;
+	g6	    = uf;
 }
 
 CudaDeviceFunction void     Heating_S()             //boundary Zou He like condition for heating on south wall
@@ -198,9 +198,9 @@ CudaDeviceFunction void     Heating_S()             //boundary Zou He like condi
 
 	real_t	density = getRho();
 
-	g[2] += Q*density * 2.0/3.0;
-	g[5] += Q*density * 1.0/6.0;
-	g[6] += Q*density * 1.0/6.0;
+	g2 += Q*density * 2.0/3.0;
+	g5 += Q*density * 1.0/6.0;
+	g6 += Q*density * 1.0/6.0;
 
 }
 
@@ -209,37 +209,51 @@ CudaDeviceFunction void     Cooling_N()             //boundary Zou He like condi
 
 	real_t	density = getRho();
 
-	g[4] -= Q*density * 2.0/3.0;
-	g[7] -= Q*density * 1.0/6.0;
-	g[8] -= Q*density * 1.0/6.0;
+	g4 -= Q*density * 2.0/3.0;
+	g7 -= Q*density * 1.0/6.0;
+	g8 -= Q*density * 1.0/6.0;
 
 }
 
 CudaDeviceFunction void     VelocityInlet_W()       //boundary Zou He like condition for velocity inlet on western wall
 {
 	//not correct
-	/*
-	real_t	density = getRho();
-
-	f[1] = InletVelocity*density * 2.0/3.0;
-	f[5] = InletVelocity*density * 1.0/6.0;
-	f[8] = InletVelocity*density * 1.0/6.0;
-	f[0] = 0.0;
-	f[2] = 0.0;
-	f[3] = 0.0;
-	f[4] = 0.0;
-	f[6] = 0.0;
-	f[7] = 0.0;
-	*/
 }
 
 
 //======================
 
+CudaDeviceFunction void     f_assign(real_t f_temp[9])   //assigns f - field based on f_temp[9]
+{
+	f0 = f_temp[0];
+	f1 = f_temp[1];
+	f2 = f_temp[2];
+	f3 = f_temp[3];
+	f4 = f_temp[4];
+	f5 = f_temp[5];
+	f6 = f_temp[6];
+	f7 = f_temp[7];
+	f8 = f_temp[8];
+}
+
+
+CudaDeviceFunction void     g_assign(real_t g[9])   //assigns g - field based on g[9]
+{
+	g0 = g[0];
+	g1 = g[1];
+	g2 = g[2];
+	g3 = g[3];
+	g4 = g[4];
+	g5 = g[5];
+	g6 = g[6];
+	g7 = g[7];
+	g8 = g[8];
+}
 													//calculates the equilibrium distribution of field
 CudaDeviceFunction void     SetEquilibrium_f(real_t density, real_t u[2])
 {
 	int i=0;
+	real_t f_temp[9];
 
 	//  relaxation factor
 	real_t  S[9];
@@ -286,14 +300,17 @@ CudaDeviceFunction void     SetEquilibrium_f(real_t density, real_t u[2])
 		u2_temp = u[0]*u[0] + u[1]*u[1];
 
 		//f_eq = ...
-		f[i] = S[i] * density * ( 1 + cu_temp/c2_s + (cu_temp*cu_temp)/(2.0*c2_s*c2_s) - u2_temp/(2.0*c2_s) );
+		f_temp[i] = S[i] * density * ( 1 + cu_temp/c2_s + (cu_temp*cu_temp)/(2.0*c2_s*c2_s) - u2_temp/(2.0*c2_s) );
 	}
+
+	f_assign(f_temp);
 }
 
 													//calculates the equilibrium distribution of g - field
 CudaDeviceFunction void     SetEquilibrium_g(real_t rhoT, real_t u[2])
 {
 	int i=0;
+	real_t g_temp[9];
 
 	//  relaxation factor
 	real_t  S[9];
@@ -340,8 +357,10 @@ CudaDeviceFunction void     SetEquilibrium_g(real_t rhoT, real_t u[2])
 		u2_temp = u[0]*u[0] + u[1]*u[1];
 
 		//f_eq = ...
-		g[i] = S[i] * rhoT * ( 1 + cu_temp/c2_s + (cu_temp*cu_temp)/(2.0*c2_s*c2_s) - u2_temp/(2.0*c2_s) );
+		g_temp[i] = S[i] * rhoT * ( 1 + cu_temp/c2_s + (cu_temp*cu_temp)/(2.0*c2_s*c2_s) - u2_temp/(2.0*c2_s) );
 	}
+
+	g_assign(g_temp);
 }
 
 													//returns Darcy's acceleration on one direction
@@ -383,7 +402,7 @@ CudaDeviceFunction real_t   u_x()               //returns velocity_x
 	}
 	else
 	{
-		u = (( f[8] - f[7] - f[6] + f[5] - f[3] + f[1]) / getRho() + acceleration_x() * 0.5);
+		u = (( f8 - f7 - f6 + f5 - f3 + f1) / getRho() + acceleration_x() * 0.5);
 	}
 
 	return u;
@@ -400,7 +419,7 @@ CudaDeviceFunction real_t   u_y()               //returns velocity_y
 	}
 	else
 	{
-		u = ((-f[8] - f[7] + f[6] + f[5] - f[4] + f[2]) / getRho() + acceleration_y() * 0.5);
+		u = ((-f8 - f7 + f6 + f5 - f4 + f2) / getRho() + acceleration_y() * 0.5);
 	}
 
 	return u;
@@ -432,20 +451,39 @@ CudaDeviceFunction void     CollisionEDM()      //physics of the collision (base
 				f_before_collision[9],
 				u_temp[2],
 				u[2],
+				f_temp[9],
 				acceleration[2];
 				acceleration[0] = acceleration_x();
 				acceleration[1] = acceleration_y();
-	for(i=0; i<9; i++)      f_before_collision[i] = f[i];
+		f_temp[0] = f0;
+		f_temp[1] = f1;
+		f_temp[2] = f2;
+		f_temp[3] = f3;
+		f_temp[4] = f4;
+		f_temp[5] = f5;
+		f_temp[6] = f6;
+		f_temp[7] = f7;
+		f_temp[8] = f8;	
+	for(i=0; i<9; i++)      f_before_collision[i] = f_temp[i];
 
-	u_before_collision[0] = ( f[8]-f[7]-f[6]+f[5]-f[3]+f[1] )/density;
-	u_before_collision[1] = (-f[8]-f[7]+f[6]+f[5]-f[4]+f[2] )/density;
+	u_before_collision[0] = ( f8-f7-f6+f5-f3+f1 )/density;
+	u_before_collision[1] = (-f8-f7+f6+f5-f4+f2 )/density;
 
 	SetEquilibrium_f(density, u_before_collision);
 
 	//after collision:
 	real_t      f_unforced[9];
 
-	for(i=0; i<9; i++)      f_unforced[i]   = f[i];
+		f_temp[0] = f0;
+		f_temp[1] = f1;
+		f_temp[2] = f2;
+		f_temp[3] = f3;
+		f_temp[4] = f4;
+		f_temp[5] = f5;
+		f_temp[6] = f6;
+		f_temp[7] = f7;
+		f_temp[8] = f8;
+	for(i=0; i<9; i++)      f_unforced[i]   = f_temp[i];
 	for(i=0; i<2; i++)      u_temp[i]       = u_before_collision[i] + acceleration[i]/Omega ;
 
 
@@ -456,32 +494,62 @@ CudaDeviceFunction void     CollisionEDM()      //physics of the collision (base
 
 	SetEquilibrium_f(getRho(), u);
 
+		f_temp[0] = f0;
+		f_temp[1] = f1;
+		f_temp[2] = f2;
+		f_temp[3] = f3;
+		f_temp[4] = f4;
+		f_temp[5] = f5;
+		f_temp[6] = f6;
+		f_temp[7] = f7;
+		f_temp[8] = f8;
 	for(i=0; i<9; i++) {
-		f[i] = (f_before_collision[i] - f_unforced[i]) * (1 - Omega) + f[i];
+		f_temp[i] = (f_before_collision[i] - f_unforced[i]) * (1 - Omega) + f_temp[i];
 	}
+	
+	f_assign(f_temp);
 
 	//=========== HEAT ===========
 	//saving memory by using f-variables
 
 	real_t  omega_T                 = 1.0/(3* AlfaT( w ) + 0.5),
-			rhoT                    = g[0] + g[1] + g[2] + g[3] + g[4] + g[5] + g[6] + g[7] + g[8],
-			g_before_collision[9];
+			rhoT                    = g0 + g1 + g2 + g3 + g4 + g5 + g6 + g7 + g8,
+			g_before_collision[9],
+			g_temp[9];
 
-	for(i=0; i<9; i++)      g_before_collision[i] = g[i];
+		g_temp[0] = g0;
+		g_temp[1] = g1;
+		g_temp[2] = g2;
+		g_temp[3] = g3;
+		g_temp[4] = g4;
+		g_temp[5] = g5;
+		g_temp[6] = g6;
+		g_temp[7] = g7;
+		g_temp[8] = g8;
+	for(i=0; i<9; i++)      g_before_collision[i] = g_temp[i];
 	SetEquilibrium_g(rhoT, u_before_collision);
 
 	//after collision
+		g_temp[0] = g0;
+		g_temp[1] = g1;
+		g_temp[2] = g2;
+		g_temp[3] = g3;
+		g_temp[4] = g4;
+		g_temp[5] = g5;
+		g_temp[6] = g6;
+		g_temp[7] = g7;
+		g_temp[8] = g8;
 	real_t                      g_unforced[9];
-	for(i=0; i<9; i++)      g_unforced[i]   = g[i];
-	rhoT = g[0] + g[1] + g[2] + g[3] + g[4] + g[5] + g[6] + g[7] + g[8];
+	for(i=0; i<9; i++)      g_unforced[i]   = g_temp[i];
+	rhoT = g0 + g1 + g2 + g3 + g4 + g5 + g6 + g7 + g8;
 
 	SetEquilibrium_g(rhoT, u);
 
 	for(i=0; i<9; i++) {
-		g[i] = (g_before_collision[i] - g_unforced[i]) * (1 - omega_T) + g[i];
+		g_temp[i] = (g_before_collision[i] - g_unforced[i]) * (1 - omega_T) + g_temp[i];
 	}
 
-
+	g_assign(g_temp);
 
 }
 
