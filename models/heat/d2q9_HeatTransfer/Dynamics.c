@@ -367,28 +367,50 @@ CudaDeviceFunction void     SetEquilibrium_g(real_t rhoT, real_t u[2])
 CudaDeviceFunction real_t   G_darcy(real_t w, real_t u)
 {
 	real_t      w_temp  = w,
-				g       = u;
+				g       = u,
+				p       = 50.0;
 
 	if(w > 1.0)
 		w_temp = 1.0;
 	else if(w<0.0)
 		w_temp = 0.0;
 
-	w_temp = (-1.0)*exp(1000.0*(w_temp-1.0));
-	g *= w_temp;
+
+	w_temp = atan( p * w_temp ) / atan( p * 1.0 );	// w approximation
+	g *= (1.0 - w_temp);                             // g = - u(1-w)
 
 	return g;
 }
 
 CudaDeviceFunction real_t   acceleration_x()    //returns acceleration_x
 {
-	return ( G_X - (1/Tref) * G_Boussinesq_X * (getT() - Tref) );
+	real_t 	u_temp,
+			acceleration_with_no_darcy = ( G_X - G_Boussinesq_X*(getT() - Tref)/Tref );
+
+
+	if( ((NodeType & NODE_BOUNDARY) == NODE_Wall) )
+		u_temp = 0.0;
+	else
+		u_temp = (( f8 - f7 - f6 + f5 - f3 + f1) / getRho() + acceleration_with_no_darcy * 0.5);
+
+
+	return ( G_X - G_Boussinesq_X*(getT() - Tref)/Tref - G_darcy(w, u_temp) );
 }
 
 
 CudaDeviceFunction real_t   acceleration_y()    //returns acceleration_y
 {
-	return ( G_Y - (1/Tref) * G_Boussinesq_Y * (getT() - Tref) );
+	real_t 	u_temp,
+			acceleration_with_no_darcy = ( G_X - G_Boussinesq_X*(getT() - Tref)/Tref );
+
+
+	if( ((NodeType & NODE_BOUNDARY) == NODE_Wall) )
+		u_temp = 0.0;
+	else
+		u_temp = ((-f8 - f7 + f6 + f5 - f4 + f2) / getRho() + acceleration_with_no_darcy * 0.5);
+
+
+	return ( G_Y - G_Boussinesq_Y*(getT() - Tref)/Tref - G_darcy(w, u_temp) );
 }
 
 
@@ -444,56 +466,47 @@ CudaDeviceFunction real_t   AlfaT(real_t w)     //function for interpolating Alf
 
 CudaDeviceFunction void     CollisionEDM()      //physics of the collision (based on Exact Difference Method)
 {
-	//before collision:
 	int i=0;
-	real_t      density                 = getRho();
+	real_t      density_before_collision = getRho();
 	real_t      u_before_collision[2],
-				f_before_collision[9],
-				u_temp[2],
 				u[2],
-				f_temp[9],
-				acceleration[2];
-				acceleration[0] = acceleration_x();
-				acceleration[1] = acceleration_y();
-		f_temp[0] = f0;
-		f_temp[1] = f1;
-		f_temp[2] = f2;
-		f_temp[3] = f3;
-		f_temp[4] = f4;
-		f_temp[5] = f5;
-		f_temp[6] = f6;
-		f_temp[7] = f7;
-		f_temp[8] = f8;	
-	for(i=0; i<9; i++)      f_before_collision[i] = f_temp[i];
+				f_before_collision[9],
+				f_unforced[9],
+				f_temp[9];
 
-	u_before_collision[0] = ( f8-f7-f6+f5-f3+f1 )/density;
-	u_before_collision[1] = (-f8-f7+f6+f5-f4+f2 )/density;
+	//before collision:
+		f_before_collision[0] = f0;
+		f_before_collision[1] = f1;
+		f_before_collision[2] = f2;
+		f_before_collision[3] = f3;
+		f_before_collision[4] = f4;
+		f_before_collision[5] = f5;
+		f_before_collision[6] = f6;
+		f_before_collision[7] = f7;
+		f_before_collision[8] = f8;
 
-	SetEquilibrium_f(density, u_before_collision);
+		u_before_collision[0] = ( f8-f7-f6+f5-f3+f1 )/density_before_collision;
+		u_before_collision[1] = (-f8-f7+f6+f5-f4+f2 )/density_before_collision;
+
+	SetEquilibrium_f(density_before_collision, u_before_collision);
 
 	//after collision:
-	real_t      f_unforced[9];
+		f_unforced[0]   = f0;
+		f_unforced[1]   = f1;
+		f_unforced[2]   = f2;
+		f_unforced[3]   = f3;
+		f_unforced[4]   = f4;
+		f_unforced[5]   = f5;
+		f_unforced[6]   = f6;
+		f_unforced[7]   = f7;
+		f_unforced[8]   = f8;
 
-		f_temp[0] = f0;
-		f_temp[1] = f1;
-		f_temp[2] = f2;
-		f_temp[3] = f3;
-		f_temp[4] = f4;
-		f_temp[5] = f5;
-		f_temp[6] = f6;
-		f_temp[7] = f7;
-		f_temp[8] = f8;
-	for(i=0; i<9; i++)      f_unforced[i]   = f_temp[i];
-	for(i=0; i<2; i++)      u_temp[i]       = u_before_collision[i] + acceleration[i]/Omega ;
-
-
-	acceleration[0]        +=  G_darcy(w, u_temp[0]);
-	acceleration[1]        +=  G_darcy(w, u_temp[1]);
-	u[0]                    = u_temp[0] + acceleration[0]/Omega ;
-	u[1]                    = u_temp[1] + acceleration[1]/Omega ;
+		u[0]            = u_before_collision[0] + acceleration_x()/Omega ;
+		u[1]            = u_before_collision[1] + acceleration_y()/Omega ;
 
 	SetEquilibrium_f(getRho(), u);
 
+	//forced:
 		f_temp[0] = f0;
 		f_temp[1] = f1;
 		f_temp[2] = f2;
@@ -503,33 +516,56 @@ CudaDeviceFunction void     CollisionEDM()      //physics of the collision (base
 		f_temp[6] = f6;
 		f_temp[7] = f7;
 		f_temp[8] = f8;
+
 	for(i=0; i<9; i++) {
 		f_temp[i] = (f_before_collision[i] - f_unforced[i]) * (1 - Omega) + f_temp[i];
 	}
 	
 	f_assign(f_temp);
 
+
+
+
+
+
 	//=========== HEAT ===========
-	//saving memory by using f-variables
 
 	real_t  omega_T                 = 1.0/(3* AlfaT( w ) + 0.5),
-			rhoT                    = g0 + g1 + g2 + g3 + g4 + g5 + g6 + g7 + g8,
+			rhoT_before_collision   = g0 + g1 + g2 + g3 + g4 + g5 + g6 + g7 + g8,
+			rhoT,
 			g_before_collision[9],
+			g_unforced[9],
 			g_temp[9];
 
-		g_temp[0] = g0;
-		g_temp[1] = g1;
-		g_temp[2] = g2;
-		g_temp[3] = g3;
-		g_temp[4] = g4;
-		g_temp[5] = g5;
-		g_temp[6] = g6;
-		g_temp[7] = g7;
-		g_temp[8] = g8;
-	for(i=0; i<9; i++)      g_before_collision[i] = g_temp[i];
-	SetEquilibrium_g(rhoT, u_before_collision);
+	//before collision:
+		g_before_collision[0] = g0;
+		g_before_collision[1] = g1;
+		g_before_collision[2] = g2;
+		g_before_collision[3] = g3;
+		g_before_collision[4] = g4;
+		g_before_collision[5] = g5;
+		g_before_collision[6] = g6;
+		g_before_collision[7] = g7;
+		g_before_collision[8] = g8;
+
+	SetEquilibrium_g(rhoT_before_collision, u_before_collision);
 
 	//after collision
+		g_unforced[0] = g0;
+		g_unforced[1] = g1;
+		g_unforced[2] = g2;
+		g_unforced[3] = g3;
+		g_unforced[4] = g4;
+		g_unforced[5] = g5;
+		g_unforced[6] = g6;
+		g_unforced[7] = g7;
+		g_unforced[8] = g8;
+
+		rhoT = g0 + g1 + g2 + g3 + g4 + g5 + g6 + g7 + g8;
+
+	SetEquilibrium_g(rhoT, u);
+
+	//forced
 		g_temp[0] = g0;
 		g_temp[1] = g1;
 		g_temp[2] = g2;
@@ -539,11 +575,7 @@ CudaDeviceFunction void     CollisionEDM()      //physics of the collision (base
 		g_temp[6] = g6;
 		g_temp[7] = g7;
 		g_temp[8] = g8;
-	real_t                      g_unforced[9];
-	for(i=0; i<9; i++)      g_unforced[i]   = g_temp[i];
-	rhoT = g0 + g1 + g2 + g3 + g4 + g5 + g6 + g7 + g8;
 
-	SetEquilibrium_g(rhoT, u);
 
 	for(i=0; i<9; i++) {
 		g_temp[i] = (g_before_collision[i] - g_unforced[i]) * (1 - omega_T) + g_temp[i];
