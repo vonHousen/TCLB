@@ -64,7 +64,6 @@
 		<Params Adiffusity="0.143mm2/s"/>
 		<Params Nu_dup="1e-5m2/s"/>
 		<Params MassFlowOutInObj="1.0"/>
-		<Params Descent="0.3"/>
 	</Model>
 
 	<VTK/>
