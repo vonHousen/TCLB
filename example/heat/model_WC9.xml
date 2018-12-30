@@ -68,10 +68,10 @@
 	</Model>
 
 	<VTK/>
-	<Solve Iterations="200000">
+	<OptSolve Iterations="200000">
 		<Log Iterations="10000"/>
 		<VTK Iterations="10000"/>
-	</Solve>
+	</OptSolve>
 
 
 
