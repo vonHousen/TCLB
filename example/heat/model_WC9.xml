@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC9_8/">
+<CLBConfig version="2.0" output="output/WC9_9/">
 
 	<Units>
 		<Params Size="0.04m"        gauge="320"/>
@@ -68,7 +68,7 @@
 		<Params Adiffusity="0.143mm2/s"/>
 		<Params Nu_dup="1e-5m2/s"/>
 		<Params MassFlowOutInObj="1.0"/>
-		<!--Params PenaltyInObj="0.5"/-->
+		<!--Params PenaltyInObj="1e-2"/-->
 		<Params Descent="0.1"/>
 	</Model>
 
@@ -78,7 +78,12 @@
 		<Log Iterations="100000"/>
 		<VTK Iterations="100000"/>
 	</OptSolve>
-
-
-
+	
+	<Params PenaltyInObj="1e-3"/>
+	<VTK/>
+	<Log/>
+	<OptSolve Iterations="1000000">
+		<Log Iterations="100000"/>
+		<VTK Iterations="100000"/>
+	</OptSolve>
 </CLBConfig>
