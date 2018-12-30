@@ -71,7 +71,7 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 
 	AddToTotalHeat( getE() );
 	AddToTotalMass( getRho() );
-	AddToPenalty( w*(1-w) );
+	AddToPenalty( w*(w-1.0) );
 }
 
 CudaDeviceFunction float2   Color()                 //does nothing - no CUDA
