@@ -13,6 +13,10 @@
 			<Box/>
 		</BGK>
 
+		<DesignSpace>
+			<Box/>
+		</DesignSpace>
+
 		<PseudoWall>
 			<Box   dx="0.015m" fx="0.035m" ny="0.005m"/>
 			<Wedge dx="0.000m" fx="0.015m" dy="0.000m" ny="0.005m" direction="LowerRight"/>
@@ -68,8 +72,9 @@
 	</Model>
 
 	<VTK/>
+	<Log/>
 	<OptSolve Iterations="200000">
-		<Log Iterations="10000"/>
+		<Log Iterations="10"/>
 		<VTK Iterations="10000"/>
 	</OptSolve>
 
