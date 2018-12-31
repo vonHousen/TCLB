@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC9_12/">
+<CLBConfig version="2.0" output="output/WC9_11/">
 
 	<Units>
 		<Params Size="0.04m"        gauge="320"/>
@@ -14,20 +14,20 @@
 		</BGK>
 
 		<DesignSpace>
-			<Box/>
+			<Box dy="5" fy="-5"/>
 		</DesignSpace>
 
 		<PseudoWall>
 			<Box   dx="0.015m" fx="0.035m" ny="0.005m"/>
-			<Wedge dx="0.000m" fx="0.015m" dy="0.000m" ny="0.005m" direction="LowerRight"/>
+			<Wedge dx="0.000m" fx="0.015m" dy="0.000m+5" ny="0.005m" direction="LowerRight"/>
 			<Wedge dx="0.015m" fx="0.020m" dy="0.005m" ny="0.005m" direction="LowerRight"/>
 			<Wedge dx="0.020m" fx="0.035m" dy="0.005m" ny="0.005m" direction="LowerLeft"/>
-			<Wedge dx="0.035m" fx="0.040m" dy="0.000m" ny="0.005m" direction="LowerLeft"/>
+			<Wedge dx="0.035m" fx="0.040m" dy="0.000m+5" ny="0.005m" direction="LowerLeft"/>
 			<Box   dx="0.000m" fx="0.015m" dy="0.015m"/>
 			<Box   dx="0.035m" fx="0.040m" dy="0.015m"/>
 			<Wedge dx="0.000m" fx="0.015m" dy="0.010m" ny="0.005m" direction="UpperLeft"/>
-			<Wedge dx="0.015m" fx="0.020m" dy="0.015m" ny="0.005m" direction="UpperLeft"/>
-			<Wedge dx="0.020m" fx="0.035m" dy="0.015m" ny="0.005m" direction="UpperRight"/>
+			<Wedge dx="0.015m" fx="0.020m" dy="0.015m" ny="0.005m-5" direction="UpperLeft"/>
+			<Wedge dx="0.020m" fx="0.035m" dy="0.015m" ny="0.005m-5" direction="UpperRight"/>
 			<Wedge dx="0.035m" fx="0.040m" dy="0.010m" ny="0.005m" direction="UpperRight"/>
 		</PseudoWall>
 
@@ -68,22 +68,35 @@
 		<Params Adiffusity="0.143mm2/s"/>
 		<Params Nu_dup="1e-5m2/s"/>
 		<Params MassFlowOutInObj="1.0"/>
-		<Params PenaltyInObj="1e-4"/>
-		<Params Descent="0.1"/>
+		<!--Params PenaltyInObj="1e-2"/-->
+		<!--Params Descent="0.1"/-->
 	</Model>
 
 	<VTK/>
 	<Log/>
-	<OptSolve Iterations="1000000">
-		<Log Iterations="100000"/>
-		<VTK Iterations="100000"/>
-	</OptSolve>
-	
-	<!--Params PenaltyInObj="1e-3"/>
+	<Solve Iterations="100000">
+		<Log Iterations="10000"/>
+	</Solve>
+
 	<VTK/>
 	<Log/>
-	<OptSolve Iterations="1000000">
-		<Log Iterations="100000"/>
-		<VTK Iterations="100000"/>
-	</OptSolve-->
+	<OptSolve Iterations="100000">
+		<Log Iterations="10000"/>
+	</OptSolve>
+
+	<Params Descent="0.02"/>
+	<VTK/>
+	<Log/>
+	<OptSolve Iterations="100000">
+		<Log Iterations="10000"/>
+		<VTK Iterations="10000"/>
+	</OptSolve>
+
+	<Params PenaltyInObj="1e-3"/>
+	<VTK/>
+	<Log/>
+	<OptSolve Iterations="10000">
+		<Log Iterations="1000"/>
+		<VTK Iterations="1000"/>
+	</OptSolve>
 </CLBConfig>
