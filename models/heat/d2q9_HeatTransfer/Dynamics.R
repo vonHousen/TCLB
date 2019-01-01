@@ -158,8 +158,9 @@ AddNodeType(name="OutletGauge",      group="GAUGE")
 #====================================================
 
 
-AddGlobal(  name="TotalHeat",    comment='Energy',      unit="J" )
-AddGlobal(  name="TotalMass",    comment='Total mass',  unit="kg" )
-AddGlobal(  name="MassFlowOut",  comment='Mass flow out', unit="kg/s")
-AddGlobal(  name="MassFlowIn",   comment='Mass flow in', unit="kg/s")
-AddGlobal(  name="Penalty",      comment='Porosity penalty function')
+AddGlobal(  name="TotalHeat",       comment='Energy',                                   unit="J" )
+AddGlobal(  name="TotalMass",       comment='Total mass',                               unit="kg" )
+AddGlobal(  name="MassFlowOut",     comment='Mass flow out',                            unit="kg/s")
+AddGlobal(  name="MassFlowIn",      comment='Mass flow in',                             unit="kg/s")
+AddGlobal(  name="MassFlowGlobal",  comment='Mass flow integrated over whole domain',   unit="kg/s" )
+AddGlobal(  name="Penalty",         comment='Porosity penalty function')

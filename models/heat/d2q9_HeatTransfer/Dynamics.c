@@ -69,6 +69,7 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 			break;
 	}
 
+	AddToMassFlowGlobal( u_x() * getRho()/1.0 );
 	AddToTotalHeat( getE() );
 	AddToTotalMass( getRho() );
 	AddToPenalty( w*(w-1.0) );
