@@ -67,7 +67,10 @@
 		<Params Ldim="0.02m"/>
 		<Params Adiffusity="0.143mm2/s"/>
 		<Params Nu_dup="1e-5m2/s"/>
-		<Params MassFlowGlobalObj="1.0"/>
+		<!--Params MassFlowGlobalInObj="1.0"/-->
+		<Params FluidVolumeInObj="-1e-3"/>
+		<Params FluidVelocity="1.0"/>
+
 		<!--Params PenaltyInObj="1e-2"/-->
 		<!--Params Descent="0.1"/-->
 	</Model>
@@ -81,27 +84,27 @@
 	<VTK/>
 	<Log/>
 	<OptSolve Iterations="50000">
-		<Log Iterations="10000"/>
+		<Log Iterations="10000"/>   <!--2min-->
 	</OptSolve>
 
-	<Params Descent="0.02"/>
+	<Params Descent="0.002"/>
 	<VTK/>
 	<Log/>
 	<OptSolve Iterations="100000">
-		<Log Iterations="10000"/>
+		<Log Iterations="10000"/>   <!--2min-->
 		<VTK Iterations="10000"/>
 	</OptSolve>
 
-	<Params Descent="0.05"/>
+	<Params Descent="0.005"/>
 	<VTK/>
 	<Log/>
 	<OptSolve Iterations="100000">
-		<Log Iterations="10000"/>
+		<Log Iterations="10000"/>   <!--2min-->
 		<VTK Iterations="10000"/>
 	</OptSolve>
 
-	<Params Descent="0.02"/>
-	<Params PenaltyInObj="1e-2"/>
+	<Params Descent="0.002"/>
+	<Params PenaltyInObj="1.0"/>
 	<VTK/>
 	<Log/>
 	<OptSolve Iterations="5000">
