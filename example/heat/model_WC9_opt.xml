@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC9_16/">
+<CLBConfig version="2.0" output="output/WC9_17/">
 
 	<Units>
 		<Params Size="0.04m"        gauge="160"/>
@@ -75,9 +75,13 @@
 	</Model>
 
 	<VTK/>
-	<Log Iterations="100"/>
-	<Stop Iterations="100" MassFlowOutChange="1e-5" times="10"/>
+	<Log Iterations="1000"/>
+	<Stop Iterations="1000" MassFlowOutChange="1e-4" times="10"/>
+	<Solve Iterations="100000"/>
+
+	<VTK/>
 	<FieldParameter field="w" where="DesignSpace"/>
+	<VTK Iterations="5000"/>
 	<Optimize>
 		<OptSolve Iterations="100000"/>
 	</Optimize>
