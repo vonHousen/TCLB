@@ -27,22 +27,19 @@
 			<Box dy="-1" ny="1"/>
 		</WallNorth>
 
-		<DefaultAlfa>
-			<Box dy="0" ny="0.01m"/>
-		</DefaultAlfa>
-		<OtherAlfa>
-			<Box dy="0.01m" ny="0.01m"/>
-		</OtherAlfa>
+		<PseudoWall>
+			<Box   dy="0.005m" ny="0.01m"/>
+		</PseudoWall>
 
 
 	</Geometry>
 
 	<Model>
 		<Params InitTemperature="300K"/>
-		<Params FluidAlfa="2"/>
-		<Params FluidAlfa2="0.5"/>
-		<Params Omega="1.0"/>
+		<Params AlfaFluid="0.1"/>
+		<Params AlfaSolid="1.0"/>
 		<Params Q="0.1"/>
+		<Params W_init="0.5"/>
 
 	</Model>
 
