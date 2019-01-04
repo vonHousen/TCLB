@@ -128,7 +128,7 @@ AddSetting(	name="Nu_dup",
 			comment='Viscosity - duplicate' )
 
 AddSetting(	name="W_init",
-			default=1,
+			default=0,
 			comment='Porosity factor' )
 
 AddSetting(	name="InletVelocity",

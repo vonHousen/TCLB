@@ -411,7 +411,7 @@ CudaDeviceFunction real_t   acceleration_y()    //returns acceleration_y
 {
 	real_t  t = getT();
 	real_t 	u_temp,
-			acceleration_with_no_darcy = ( G_X - G_Boussinesq_X*(t - Tref)*Beta );
+			acceleration_with_no_darcy = ( G_Y - G_Boussinesq_Y*(t - Tref)*Beta );
 
 
 	if( ((NodeType & NODE_BOUNDARY) == NODE_Wall) )
