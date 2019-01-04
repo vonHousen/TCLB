@@ -20,3 +20,5 @@ p
 .Rproj.user
 transfer
 login
+sync
+.idea/*

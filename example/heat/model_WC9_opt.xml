@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC9_19/">
+<CLBConfig version="2.0" output="output/WC9_20/">
 
 	<Units>
 		<Params Size="0.04m"        gauge="160"/>
@@ -79,7 +79,7 @@
 	<VTK/>
 	<FieldParameter field="w" where="DesignSpace"/>
 	<VTK Iterations="5000"/>
-	<Optimize method="MMA" MaxEvaluations="70">
+	<Optimize method="MMA" MaxEvaluations="90">
 		<OptSolve Iterations="100000"/>
 	</Optimize>
 
@@ -90,17 +90,45 @@
 		<OptSolve Iterations="100000"/>
 	</Optimize>
 
-	<Params PenaltyPorosityInObj="1e-2"/>
+	<Params PenaltyPorosityInObj="1.3e-2"/>
 	<FieldParameter field="w" where="DesignSpace"/>
 	<VTK Iterations="5000"/>
-	<Optimize method="MMA" MaxEvaluations="10">
+	<Optimize method="MMA" MaxEvaluations="50">
 		<OptSolve Iterations="100000"/>
 	</Optimize>
 
+	<Params PenaltyPorosityInObj="2.5e-2"/>
+	<FieldParameter field="w" where="DesignSpace"/>
+	<VTK Iterations="5000"/>
+	<Optimize method="MMA" MaxEvaluations="5">
+		<OptSolve Iterations="100000"/>
+	</Optimize>
+	
+	<Params PenaltyPorosityInObj="5e-2"/>
+	<FieldParameter field="w" where="DesignSpace"/>
+	<VTK Iterations="5000"/>
+	<Optimize method="MMA" MaxEvaluations="5">
+		<OptSolve Iterations="100000"/>
+	</Optimize>
+	
 	<Params PenaltyPorosityInObj="1e-1"/>
 	<FieldParameter field="w" where="DesignSpace"/>
 	<VTK Iterations="5000"/>
-	<Optimize method="MMA" MaxEvaluations="10">
+	<Optimize method="MMA" MaxEvaluations="5">
+		<OptSolve Iterations="100000"/>
+	</Optimize>
+	
+	<Params PenaltyPorosityInObj="2e-1"/>
+	<FieldParameter field="w" where="DesignSpace"/>
+	<VTK Iterations="5000"/>
+	<Optimize method="MMA" MaxEvaluations="5">
+		<OptSolve Iterations="100000"/>
+	</Optimize>
+	
+	<Params PenaltyPorosityInObj="5e-1"/>
+	<FieldParameter field="w" where="DesignSpace"/>
+	<VTK Iterations="5000"/>
+	<Optimize method="MMA" MaxEvaluations="80">
 		<OptSolve Iterations="100000"/>
 	</Optimize>
 
