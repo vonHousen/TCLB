@@ -100,7 +100,7 @@ AddSetting(	name="Q",
 			comment='Heat flux' )
 
 AddSetting(	name="Beta",
-			default=0,
+			default=0.00021,
 			comment='Coefficent of heat expansion' )
 
 AddSetting(	name="Tref",
