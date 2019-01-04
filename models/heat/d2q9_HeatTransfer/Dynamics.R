@@ -100,7 +100,7 @@ AddSetting(	name="Q",
 			comment='Heat flux' )
 
 AddSetting(	name="Beta",
-			default=0,
+			default=0.00021,
 			comment='Coefficent of heat expansion' )
 
 AddSetting(	name="Tref",
@@ -128,13 +128,12 @@ AddSetting(	name="Nu_dup",
 			comment='Viscosity - duplicate' )
 
 AddSetting(	name="W_init",
-			default=1,
+			default=0,
 			comment='Porosity factor' )
 
 AddSetting(	name="InletVelocity",
 			default=0,
 			comment='Velocity on inlet' )
-
 
 
 #=====================================================
@@ -151,15 +150,18 @@ AddNodeType(name="OtherAlfa",       group="TEMPALFA")
 AddNodeType(name="PseudoWall",      group="POROUSWALL")
 AddNodeType(name="InletW",          group="INLET")
 AddNodeType(name="InletGauge",      group="GAUGE")
-AddNodeType(name="OutletGauge",      group="GAUGE")
+AddNodeType(name="OutletGauge",     group="GAUGE")
 
 #TODO alfa not in the group "TEMPALFA"
 
 #====================================================
 
 
-AddGlobal(  name="TotalHeat",    comment='Energy',      unit="J" )
-AddGlobal(  name="TotalMass",    comment='Total mass',  unit="kg" )
-AddGlobal(  name="MassFlowOut",  comment='Mass flow out', unit="kg/s")
-AddGlobal(  name="MassFlowIn",   comment='Mass flow in', unit="kg/s")
-AddGlobal(  name="Penalty",      comment='Porosity penalty function')
+AddGlobal(  name="TotalHeat",       comment='Energy',                                   unit="J" )
+AddGlobal(  name="TotalMass",       comment='Total mass',                               unit="kg" )
+AddGlobal(  name="MassFlowOut",     comment='Mass flow out',                            unit="kg/s")
+AddGlobal(  name="MassFlowIn",      comment='Mass flow in',                             unit="kg/s")
+AddGlobal(  name="MassFlowGlobal",  comment='Mass flow integrated over whole domain',   unit="kg/s" )
+AddGlobal(  name="PenaltyPorosity", comment='Porosity penalty function')
+AddGlobal(  name="FluidVolume",     comment='Volume of the fluid')
+AddGlobal(  name="FluidVelocity",   comment='Velocity of the fluid',                    unit="m/s")

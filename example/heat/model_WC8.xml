@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC8_6/">
+<CLBConfig version="2.0" output="output/WC8_9/">
 
 	<Units>
 		<Params Size="1e-4m"        gauge="1"/>
@@ -34,23 +34,22 @@
 
 	<Model>
 		<Params InitTemperature="300K"/>
-		<Params InitVelocityX="0.08m/s"/>
-		<Params AlfaFluid="0.1"/>
-		<Params AlfaSolid="0.05"/>
+		<Params InitVelocityX="0.06m/s"/>
+		<Params AlfaFluid="0.1666"/>
+		<Params AlfaSolid="1.6666"/>
+		<Params G_Boussinesq_Y="-9.81e-3m/s2"/>
 		<Params Omega="1.0"/>
 		<Params Tref="300K"/>
 		<Params Nu_dup="1e-5m2/s"/>
 		<Params W_init="0.5"/>
-		<Params G_X="0.003m/s2"/>
+		<Params G_X="0.005m/s2"/>
 	</Model>
 
 	<VTK/>
-	<Solve Iterations="3000"/>
-	<VTK/>
-	<!--Solve Iterations="3000">
-		<VTK Iterations="100"/>
+	<Solve Iterations="10000">
+		<VTK Iterations="1000"/>
 		<Log Iterations="100"/>
-	</Solve-->
+	</Solve>
 
 
 </CLBConfig>

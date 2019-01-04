@@ -19,23 +19,26 @@
 			<Box dy="-1" ny="1"/>
 		</Wall>
 
-		<DefaultAlfa>
-			<Box/>
-		</DefaultAlfa>
+		<InletGauge>
+			<Box dx="0" nx="1"/>
+		</InletGauge>
 
+		<OutletGauge>
+			<Box dx="-1" nx="1"/>
+		</OutletGauge>
 	</Geometry>
 
 	<Model>
 		<Params InitTemperature="300K"/>
-		<Params FluidAlfa="1.3"/>
-		<Params Omega="1.0"/>
-		<Params G_X="0.0003m/s2"/>
+		<Params AlfaFluid="0.1666"/>
+		<Params G_X="0.03m/s2"/>
 	</Model>
 
 	<VTK/>
-	<Solve Iterations="25000">
+	<Stop Iterations="100" MassFlowGlobalChange="1e-2" times="10"/>
+	<Solve Iterations="50000">
 		<Log Iterations="1000"/>
-		<VTK Iterations="1000"/>
+		<VTK Iterations="5000"/>
 	</Solve>
 
 

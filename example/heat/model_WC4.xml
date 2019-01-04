@@ -23,25 +23,20 @@
 			<Box dy="0" ny="1"/>
 		</WallSouth>
 
-		<DefaultAlfa>
-			<Box/>
-		</DefaultAlfa>
-
 	</Geometry>
 
 	<Model>
 		<Params InitTemperature="300K"/>
-		<Params SourceTemperature="400K"/>
-		<Params FluidAlfa="2"/>
+		<Params AlfaFluid="2"/>
 		<Params Omega="1.0"/>
-		<Params Q="1.39"/>
+		<Params Q="1"/>
 	</Model>
 
 	<VTK/>
 	<Log/>
 	<Solve Iterations="2000">
-		<Log Iterations="10"/>
-		<VTK Iterations="10"/>
+		<Log Iterations="100"/>
+		<VTK Iterations="100"/>
 	</Solve>
 
 

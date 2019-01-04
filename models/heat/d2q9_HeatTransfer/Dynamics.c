@@ -27,7 +27,8 @@ CudaDeviceFunction void     Init()                  //initialising function - us
 
 CudaDeviceFunction void     Run()                   //main function - acts every iteration
 {
-	real_t      u[2];
+	real_t      u[2],
+				w_temp = w;
 
 
 	if ( (NodeType & NODE_BOUNDARY) == NODE_Wall )
@@ -57,21 +58,26 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 	if ((NodeType & NODE_COLLISION) == NODE_BGK )
 		CollisionEDM();
 
-
+	u[0] = u_x();
+	u[1] = u_y();
 
 	switch (NodeType & NODE_GAUGE)
 	{
 		case NODE_InletGauge:
-			AddToMassFlowIn(  u_x() * getRho()/1.0 );
+			AddToMassFlowIn(  u[0] * getRho()/1.0 );
 			break;
 		case NODE_OutletGauge:
-			AddToMassFlowOut( u_x() * getRho()/1.0 );
+			AddToMassFlowOut( u[0] * getRho()/1.0 );
 			break;
 	}
 
+	AddToMassFlowGlobal( u[0] * getRho()/1.0 );
 	AddToTotalHeat( getE() );
 	AddToTotalMass( getRho() );
-	AddToPenalty( w*(w-1.0) );
+	AddToPenaltyPorosity( w_temp*(w_temp-1.0) );
+	AddToFluidVolume( w_temp );
+	if ( w_temp > 0.5 )
+		AddToFluidVelocity( sqrt( u[0]*u[0] + u[1]*u[1] ) );
 }
 
 CudaDeviceFunction float2   Color()                 //does nothing - no CUDA
@@ -98,7 +104,7 @@ CudaDeviceFunction real_t   getGr()                 //gets value of Grashof numb
 	real_t  g = sqrt(G_Boussinesq_X*G_Boussinesq_X + G_Boussinesq_Y*G_Boussinesq_Y),
 			nu = Nu_dup;
 
-	return ( (1/Tref) * (getT() - Tref) * (g*Ldim*Ldim*Ldim)/(nu*nu) );
+	return ( Beta * (getT() - Tref) * (g*Ldim*Ldim*Ldim)/(nu*nu) );
 }
 
 CudaDeviceFunction real_t   getPr()                 //gets value of Prandtl number at the current node.
@@ -219,6 +225,8 @@ CudaDeviceFunction void     VelocityInlet_W()       //boundary Zou He like condi
 {
 	//not correct
 }
+
+
 
 
 //======================
@@ -386,7 +394,7 @@ CudaDeviceFunction real_t   acceleration_x()    //returns acceleration_x
 {
 	real_t  t = getT();
 	real_t 	u_temp,
-			acceleration_with_no_darcy = ( G_X - G_Boussinesq_X*(t - Tref)/Tref );
+			acceleration_with_no_darcy = ( G_X - G_Boussinesq_X*(t - Tref)*Beta );
 
 
 	if( ((NodeType & NODE_BOUNDARY) == NODE_Wall) )
@@ -395,7 +403,7 @@ CudaDeviceFunction real_t   acceleration_x()    //returns acceleration_x
 		u_temp = (( f8 - f7 - f6 + f5 - f3 + f1) / getRho() + acceleration_with_no_darcy * 0.5);
 
 
-	return ( G_X - G_Boussinesq_X*(t - Tref)/Tref - G_darcy(w, u_temp) );
+	return ( G_X - G_Boussinesq_X*(t - Tref)*Beta - G_darcy(w, u_temp) );
 }
 
 
@@ -403,7 +411,7 @@ CudaDeviceFunction real_t   acceleration_y()    //returns acceleration_y
 {
 	real_t  t = getT();
 	real_t 	u_temp,
-			acceleration_with_no_darcy = ( G_X - G_Boussinesq_X*(t - Tref)/Tref );
+			acceleration_with_no_darcy = ( G_Y - G_Boussinesq_Y*(t - Tref)*Beta );
 
 
 	if( ((NodeType & NODE_BOUNDARY) == NODE_Wall) )
@@ -412,7 +420,7 @@ CudaDeviceFunction real_t   acceleration_y()    //returns acceleration_y
 		u_temp = ((-f8 - f7 + f6 + f5 - f4 + f2) / getRho() + acceleration_with_no_darcy * 0.5);
 
 
-	return ( G_Y - G_Boussinesq_Y*(t - Tref)/Tref - G_darcy(w, u_temp) );
+	return ( G_Y - G_Boussinesq_Y*(t - Tref)*Beta - G_darcy(w, u_temp) );
 }
 
 
