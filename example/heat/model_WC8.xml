@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC8_8/">
+<CLBConfig version="2.0" output="output/WC8_9/">
 
 	<Units>
 		<Params Size="1e-4m"        gauge="1"/>
@@ -16,7 +16,6 @@
 		<Wall mask="ALL">
 			<Box dy="0" ny="1"/>
 			<Box dy="-1" ny="1"/>
-			<Box dx="0.015m" nx="0.01m" dy="-0.003m" ny="0.003m"/>
 		</Wall>
 
 		<PseudoWall>
@@ -36,12 +35,13 @@
 	<Model>
 		<Params InitTemperature="300K"/>
 		<Params InitVelocityX="0.06m/s"/>
-		<Params AlfaFluid="0.1"/>
-		<Params AlfaSolid="0.05"/>
+		<Params AlfaFluid="0.1666"/>
+		<Params AlfaSolid="1.6666"/>
+		<Params G_Boussinesq_Y="-9.81e-3m/s2"/>
 		<Params Omega="1.0"/>
 		<Params Tref="300K"/>
 		<Params Nu_dup="1e-5m2/s"/>
-		<Params W_init="0.0"/>
+		<Params W_init="0.5"/>
 		<Params G_X="0.005m/s2"/>
 	</Model>
 
