@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC9_23/">
+<CLBConfig version="2.0" output="output/WC9_24/">
 
 	<Units>
 		<Params Size="0.04m"        gauge="160"/>
@@ -68,7 +68,7 @@
 		<Params FluidVolumeInObj="-1e-6"/>
 		<Params FluidVelocityInObj="1e-3"/>
 		<Params MassFlowOutInObj="10.0"/>
-		<Params PenaltyPorosityInObj="1e-3"/>
+		<Params PenaltyPorosityInObj="4e-3"/>
 	</Model>
 
 	<VTK/>
@@ -79,7 +79,7 @@
 	<VTK/>
 	<FieldParameter field="w" where="DesignSpace"/>
 	<VTK Iterations="5000"/>
-	<Optimize method="MMA" MaxEvaluations="200">
+	<Optimize method="MMA" MaxEvaluations="100">
 		<OptSolve Iterations="100000"/>
 	</Optimize>
 
