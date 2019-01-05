@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC9_20/">
+<CLBConfig version="2.0" output="output/WC9_21/">
 
 	<Units>
 		<Params Size="0.04m"        gauge="160"/>
@@ -79,18 +79,11 @@
 	<VTK/>
 	<FieldParameter field="w" where="DesignSpace"/>
 	<VTK Iterations="5000"/>
-	<Optimize method="MMA" MaxEvaluations="90">
+	<Optimize method="MMA" MaxEvaluations="100">
 		<OptSolve Iterations="100000"/>
 	</Optimize>
 
 	<Params PenaltyPorosityInObj="5e-3"/>
-	<FieldParameter field="w" where="DesignSpace"/>
-	<VTK Iterations="5000"/>
-	<Optimize method="MMA" MaxEvaluations="10">
-		<OptSolve Iterations="100000"/>
-	</Optimize>
-
-	<Params PenaltyPorosityInObj="1.3e-2"/>
 	<FieldParameter field="w" where="DesignSpace"/>
 	<VTK Iterations="5000"/>
 	<Optimize method="MMA" MaxEvaluations="50">
@@ -100,36 +93,19 @@
 	<Params PenaltyPorosityInObj="2.5e-2"/>
 	<FieldParameter field="w" where="DesignSpace"/>
 	<VTK Iterations="5000"/>
-	<Optimize method="MMA" MaxEvaluations="5">
+	<Optimize method="MMA" MaxEvaluations="50">
 		<OptSolve Iterations="100000"/>
 	</Optimize>
 	
 	<Params PenaltyPorosityInObj="5e-2"/>
 	<FieldParameter field="w" where="DesignSpace"/>
 	<VTK Iterations="5000"/>
-	<Optimize method="MMA" MaxEvaluations="5">
+	<Optimize method="MMA" MaxEvaluations="50">
 		<OptSolve Iterations="100000"/>
 	</Optimize>
 	
-	<Params PenaltyPorosityInObj="1e-1"/>
-	<FieldParameter field="w" where="DesignSpace"/>
-	<VTK Iterations="5000"/>
-	<Optimize method="MMA" MaxEvaluations="5">
-		<OptSolve Iterations="100000"/>
-	</Optimize>
-	
-	<Params PenaltyPorosityInObj="2e-1"/>
-	<FieldParameter field="w" where="DesignSpace"/>
-	<VTK Iterations="5000"/>
-	<Optimize method="MMA" MaxEvaluations="5">
-		<OptSolve Iterations="100000"/>
-	</Optimize>
-	
-	<Params PenaltyPorosityInObj="5e-1"/>
-	<FieldParameter field="w" where="DesignSpace"/>
-	<VTK Iterations="5000"/>
-	<Optimize method="MMA" MaxEvaluations="80">
-		<OptSolve Iterations="100000"/>
-	</Optimize>
+	<VTK Iterations="100000"/>
+	<Solve Iterations="100000"/>
+	<VTK/>
 
 </CLBConfig>
