@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC10_2/">
+<CLBConfig version="2.0" output="output/WC10_3/">
 
 	<Units>
 		<Params Size="0.04m"        gauge="160"/>
@@ -18,8 +18,8 @@
 		</DesignSpace>
 
 		<PseudoWall>
-			<Wedge dx="0.015m" nx="0.005m" dy="0.000m" ny="0.005m" direction="LowerRight"/>
-			<Wedge dx="0.02m" nx="0.005m" dy="0.000m" ny="0.005m" direction="LowerLeft"/>
+			<Wedge dx="0.015m" nx="0.005m" dy="0.000m" ny="0.003m" direction="LowerRight"/>
+			<!--Wedge dx="0.02m" nx="0.005m" dy="0.000m" ny="0.005m" direction="LowerLeft"/-->
 		</PseudoWall>
 
 		<Wall mask="ALL">
