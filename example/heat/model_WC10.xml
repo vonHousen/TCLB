@@ -19,7 +19,9 @@
 
 		<PseudoWall>
 			<Wedge dx="0.015m" nx="0.005m" dy="0.000m" ny="0.003m" direction="LowerRight"/>
-			<!--Wedge dx="0.02m" nx="0.005m" dy="0.000m" ny="0.005m" direction="LowerLeft"/-->
+			<Wedge dx="0.02m" nx="0.005m" dy="-0.003m" ny="0.003m" direction="UpperRight"/>
+			<Box dy="0" ny="1"/>
+			<Box dy="-1" ny"1"/>
 		</PseudoWall>
 
 		<Wall mask="ALL">
@@ -60,7 +62,7 @@
 		<Params Nu_dup="1e-5m2/s"/>
 		<Params FluidVolumeInObj="-1e-6"/>
 		<Params MassFlowOutInObj="10.0"/>
-		<Params PenaltyPorosityInObj="1e-3"/>
+		<!--Params PenaltyPorosityInObj="1e-3"/-->
 		<Params InitSourceTemperature="350K"/>
 	</Model>
 
@@ -68,11 +70,19 @@
 	<Log Iterations="1000"/>
 	<!--Stop Iterations="1000" MassFlowOutChange="1e-5" times="10"/-->
 	<Solve Iterations="50000"/>
-
+	
 	<VTK/>
 	<FieldParameter field="w" where="DesignSpace"/>
+        <VTK Iterations="25000"/>
+        <Optimize method="MMA" MaxEvaluations="50">
+                <OptSolve Iterations="25000"/>
+        </Optimize>
+
+
+	<Params PenaltyPorosityInObj="5e-3"/>
+	<FieldParameter field="w" where="DesignSpace"/>
 	<VTK Iterations="25000"/>
-	<Optimize method="MMA" MaxEvaluations="100">
+	<Optimize method="MMA" MaxEvaluations="50">
 		<OptSolve Iterations="25000"/>
 	</Optimize>
 
