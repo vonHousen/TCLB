@@ -20,8 +20,8 @@
 		<PseudoWall>
 			<!--Wedge dx="0.015m" nx="0.005m" dy="0.000m" ny="0.003m" direction="LowerRight"/>
 			<Wedge dx="0.02m" nx="0.005m" dy="-0.003m" ny="0.003m" direction="UpperRight"/-->
-			<Box dy="0" ny="0.005m"/>
-			<Box dy="-0.005m" ny="0.005m"/>
+			<Box dy="0" ny="0.001m"/>
+			<Box dy="-0.005m" ny="0.001m"/>
 		</PseudoWall>
 
 		<Wall mask="ALL">
@@ -60,7 +60,7 @@
 		<Params Ldim="0.02m"/>
 		<Params Adiffusity="0.143mm2/s"/>
 		<Params Nu_dup="1e-5m2/s"/>
-		<Params FluidVolumeInObj="-1e-6"/>
+		<Params FluidVolumeInObj="-1e-5"/>
 		<Params MassFlowOutInObj="10.0"/>
 		<!--Params PenaltyPorosityInObj="1e-3"/-->
 		<Params InitSourceTemperature="350K"/>
