@@ -21,7 +21,7 @@
 			<Wedge dx="0.015m" nx="0.005m" dy="0.000m" ny="0.003m" direction="LowerRight"/>
 			<Wedge dx="0.02m" nx="0.005m" dy="-0.003m" ny="0.003m" direction="UpperRight"/>
 			<Box dy="0" ny="1"/>
-			<Box dy="-1" ny"1"/>
+			<Box dy="-1" ny="1"/>
 		</PseudoWall>
 
 		<Wall mask="ALL">
