@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC9_25/">
+<CLBConfig version="2.0" output="output/WC9_26/">
 
 	<Units>
 		<Params Size="0.04m"        gauge="160"/>
@@ -76,7 +76,7 @@
 
 	<VTK/>
 	<FieldParameter field="w" where="DesignSpace"/>
-	<Optimize method="MMA" MaxEvaluations="100">
+	<Optimize method="MMA" MaxEvaluations="100" Material="less">
 		<OptSolve Iterations="100000"/>
 		<VTK/>
 	</Optimize>
