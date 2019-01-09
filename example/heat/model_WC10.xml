@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC10_4/">
+<CLBConfig version="2.0" output="output/WC10_5/">
 
 	<Units>
 		<Params Size="0.04m"        gauge="160"/>
@@ -18,8 +18,6 @@
 		</DesignSpace>
 
 		<PseudoWall>
-			<Wedge dx="0.018m" nx="0.002m" dy="0.000m" ny="0.005m" direction="LowerRight"/>
-			<Wedge dx="0.02m" nx="0.002m" dy="0.000m" ny="0.005m" direction="LowerLeft"/>
 			<Box dy="0" ny="0.001m"/>
 			<Box dy="-0.001m" ny="0.001m"/>
 		</PseudoWall>
@@ -69,21 +67,22 @@
 	<VTK/>
 	<Log Iterations="1000"/>
 	<!--Stop Iterations="1000" MassFlowOutChange="1e-5" times="10"/-->
-	<Solve Iterations="50000"/>
-	
+	<Solve Iterations="50000">
+		<VTK Iterations="5000"/>
+	</Solve>
+
 	<VTK/>
 	<FieldParameter field="w" where="DesignSpace"/>
-        <VTK Iterations="25000"/>
-        <Optimize method="MMA" MaxEvaluations="50">
-                <OptSolve Iterations="25000"/>
-        </Optimize>
-
+    <Optimize method="MMA" MaxEvaluations="50">
+            <OptSolve Iterations="40000"/>
+            <VTK/>
+    </Optimize>
 
 	<Params PenaltyPorosityInObj="5e-3"/>
 	<FieldParameter field="w" where="DesignSpace"/>
-	<VTK Iterations="25000"/>
 	<Optimize method="MMA" MaxEvaluations="50">
-		<OptSolve Iterations="25000"/>
+		<OptSolve Iterations="4000"/>
+		<VTK/>
 	</Optimize>
 
 	<Solve Iterations="50000"/>

@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC9_21/">
+<CLBConfig version="2.0" output="output/WC9_25/">
 
 	<Units>
 		<Params Size="0.04m"        gauge="160"/>
@@ -64,9 +64,7 @@
 		<Params Ldim="0.02m"/>
 		<Params Adiffusity="0.143mm2/s"/>
 		<Params Nu_dup="1e-5m2/s"/>
-
-		<Params FluidVolumeInObj="-1e-6"/>
-		<Params FluidVelocityInObj="1e-3"/>
+		<!--Params KineticEnergyInObj="1e-3"/-->
 		<Params MassFlowOutInObj="10.0"/>
 		<Params PenaltyPorosityInObj="1e-3"/>
 	</Model>
@@ -78,51 +76,50 @@
 
 	<VTK/>
 	<FieldParameter field="w" where="DesignSpace"/>
-	<VTK Iterations="5000"/>
 	<Optimize method="MMA" MaxEvaluations="100">
 		<OptSolve Iterations="100000"/>
+		<VTK/>
 	</Optimize>
 
 	<Params PenaltyPorosityInObj="5e-3"/>
 	<FieldParameter field="w" where="DesignSpace"/>
-	<VTK Iterations="5000"/>
 	<Optimize method="MMA" MaxEvaluations="40">
 		<OptSolve Iterations="100000"/>
+		<VTK/>
 	</Optimize>
 
 	<Params PenaltyPorosityInObj="2.5e-2"/>
 	<FieldParameter field="w" where="DesignSpace"/>
-	<VTK Iterations="5000"/>
 	<Optimize method="MMA" MaxEvaluations="20">
 		<OptSolve Iterations="100000"/>
+		<VTK/>
 	</Optimize>
 
 	<Params PenaltyPorosityInObj="5e-2"/>
 	<FieldParameter field="w" where="DesignSpace"/>
-	<VTK Iterations="5000"/>
 	<Optimize method="MMA" MaxEvaluations="20">
 		<OptSolve Iterations="100000"/>
 	</Optimize>
 
 	<Params MassFlowOutInObj="3.0"/>
 	<FieldParameter field="w" where="DesignSpace"/>
-	<VTK Iterations="5000"/>
 	<Optimize method="MMA" MaxEvaluations="20">
 		<OptSolve Iterations="100000"/>
+		<VTK/>
 	</Optimize>
 
 	<Params PenaltyPorosityInObj="1e-1"/>
 	<FieldParameter field="w" where="DesignSpace"/>
-	<VTK Iterations="5000"/>
 	<Optimize method="MMA" MaxEvaluations="20">
 		<OptSolve Iterations="100000"/>
+		<VTK/>
 	</Optimize>
 
 	<Params MassFlowOutInObj="1.0"/>
 	<FieldParameter field="w" where="DesignSpace"/>
-	<VTK Iterations="5000"/>
 	<Optimize method="MMA" MaxEvaluations="20">
 		<OptSolve Iterations="100000"/>
+		<VTK/>
 	</Optimize>
 
 	<Params PenaltyPorosityInObj="5e-1"/>
@@ -130,9 +127,9 @@
 	<VTK Iterations="5000"/>
 	<Optimize method="MMA" MaxEvaluations="20">
 		<OptSolve Iterations="100000"/>
+		<VTK/>
 	</Optimize>
 
-	<VTK Iterations="100000"/>
 	<Solve Iterations="100000"/>
 	<VTK/>
 
