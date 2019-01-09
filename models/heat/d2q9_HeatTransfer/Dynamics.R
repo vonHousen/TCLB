@@ -157,11 +157,11 @@ AddNodeType(name="OutletGauge",     group="GAUGE")
 #====================================================
 
 
-AddGlobal(  name="TotalHeat",       comment='Energy',                                   unit="J" )
+AddGlobal(  name="TotalHeat",       comment='Total heat',                               unit="J" )
 AddGlobal(  name="TotalMass",       comment='Total mass',                               unit="kg" )
 AddGlobal(  name="MassFlowOut",     comment='Mass flow out',                            unit="kg/s")
 AddGlobal(  name="MassFlowIn",      comment='Mass flow in',                             unit="kg/s")
 AddGlobal(  name="MassFlowGlobal",  comment='Mass flow integrated over whole domain',   unit="kg/s" )
 AddGlobal(  name="PenaltyPorosity", comment='Porosity penalty function')
 AddGlobal(  name="FluidVolume",     comment='Volume of the fluid')
-AddGlobal(  name="FluidVelocity",   comment='Velocity of the fluid',                    unit="m/s")
+AddGlobal(  name="KineticEnergy",   comment='Kinetic energy of the fluid',              unit="J")

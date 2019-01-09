@@ -3,8 +3,7 @@ CudaDeviceFunction void     Init()                  //initialising function - us
 {
 	real_t  u[2]     = {InitVelocityX, InitVelocityY},
 			density  = Density,
-			rhoT     = density*InitTemperature,
-			w_init   = 1.0;
+			rhoT     = density*InitTemperature;
 
 	if((NodeType & NODE_BOUNDARY) == NODE_Wall)
 	{
@@ -16,9 +15,10 @@ CudaDeviceFunction void     Init()                  //initialising function - us
 		rhoT = density*InitSourceTemperature;
 
 	if ((NodeType & NODE_POROUSWALL) == NODE_PseudoWall)
-		w_init = W_init;
+		w = W_init;
+	else
+		w = 1.0;
 
-	w = w_init;
 	SetEquilibrium_f(density, u);
 	SetEquilibrium_g(rhoT, u);
 
@@ -28,7 +28,8 @@ CudaDeviceFunction void     Init()                  //initialising function - us
 CudaDeviceFunction void     Run()                   //main function - acts every iteration
 {
 	real_t      u[2],
-				w_temp = w;
+				w_temp = w,
+				u2;
 
 
 	if ( (NodeType & NODE_BOUNDARY) == NODE_Wall )
@@ -60,6 +61,7 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 
 	u[0] = u_x();
 	u[1] = u_y();
+	u2 = u[0]*u[0] + u[1]*u[1];
 
 	switch (NodeType & NODE_GAUGE)
 	{
@@ -76,8 +78,8 @@ CudaDeviceFunction void     Run()                   //main function - acts every
 	AddToTotalMass( getRho() );
 	AddToPenaltyPorosity( w_temp*(w_temp-1.0) );
 	AddToFluidVolume( w_temp );
-	if ( w_temp > 0.5 )
-		AddToFluidVelocity( sqrt( u[0]*u[0] + u[1]*u[1] ) );
+	AddToKineticEnergy( getRho() * u2 / 2.0 );
+
 }
 
 CudaDeviceFunction float2   Color()                 //does nothing - no CUDA
@@ -375,19 +377,13 @@ CudaDeviceFunction void     SetEquilibrium_g(real_t rhoT, real_t u[2])
 CudaDeviceFunction real_t   G_darcy(real_t w, real_t u)
 {
 	real_t      w_temp  = w,
-				g       = u,
 				p       = 50.0;
-
-	if(w > 1.0)
-		w_temp = 1.0;
-	else if(w<0.0)
-		w_temp = 0.0;
 
 
 	w_temp = atan( p * w_temp ) / atan( p * 1.0 );	// w approximation
-	g *= (1.0 - w_temp);                             // g = - u(1-w)
+	u *= (1.0 - w_temp);                             // g = - u(1-w)
 
-	return g;
+	return u;
 }
 
 CudaDeviceFunction real_t   acceleration_x()    //returns acceleration_x
@@ -460,17 +456,8 @@ CudaDeviceFunction real_t   u_y()               //returns velocity_y
 
 CudaDeviceFunction real_t   AlfaT(real_t w)     //function for interpolating AlfaT
 {
-	real_t alfa;
 
-	if( w >= 1.0 )
-		alfa = AlfaFluid;
-	else if( w<=0.0 )
-		alfa = AlfaSolid;
-	else
-		alfa = AlfaSolid*(1.0-w) + AlfaFluid*w;
-
-
-	return alfa;
+	return ( AlfaSolid*(1.0-w) + AlfaFluid*w );
 }
 
 
@@ -511,8 +498,8 @@ CudaDeviceFunction void     CollisionEDM()      //physics of the collision (base
 		f_unforced[7]   = f7;
 		f_unforced[8]   = f8;
 
-		u[0]            = u_before_collision[0] + acceleration_x()/Omega ;
-		u[1]            = u_before_collision[1] + acceleration_y()/Omega ;
+		u[0]            = u_before_collision[0] + acceleration_x();
+		u[1]            = u_before_collision[1] + acceleration_y();
 
 	SetEquilibrium_f(getRho(), u);
 
