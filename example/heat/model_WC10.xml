@@ -18,6 +18,7 @@
 		</DesignSpace>
 
 		<PseudoWall>
+			<Wedge dy="0" ny="0.005m" dx="0.03m" nx="0.005m" direction="LowerRight"/>
 			<Box dy="0" ny="0.001m"/>
 			<Box dy="-0.001m" ny="0.001m"/>
 		</PseudoWall>
@@ -58,10 +59,11 @@
 		<Params Ldim="0.02m"/>
 		<Params Adiffusity="0.143mm2/s"/>
 		<Params Nu_dup="1e-5m2/s"/>
-		<Params FluidVolumeInObj="-1e-5"/>
+		<Params FluidVolumeInObj="-1e-6"/>
 		<Params MassFlowOutInObj="10.0"/>
-		<Params MassFlowGlobalInObj="5.0e-3"/>
-		<!--Params PenaltyPorosityInObj="1e-3"/-->
+		<Params KineticEnergyInObj="1e-2"/>
+		<!--Params MassFlowGlobalInObj="5.0e-3"/-->
+		<Params PenaltyPorosityInObj="-1e-3"/>
 		<Params InitSourceTemperature="350K"/>
 	</Model>
 
