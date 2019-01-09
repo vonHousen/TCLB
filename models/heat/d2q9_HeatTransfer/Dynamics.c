@@ -377,13 +377,14 @@ CudaDeviceFunction void     SetEquilibrium_g(real_t rhoT, real_t u[2])
 CudaDeviceFunction real_t   G_darcy(real_t w, real_t u)
 {
 	real_t      w_temp  = w,
+				g       = u,
 				p       = 50.0;
 
 
 	w_temp = atan( p * w_temp ) / atan( p * 1.0 );	// w approximation
-	u *= (1.0 - w_temp);                             // g = - u(1-w)
+	g *= (1.0 - w_temp);                             // g = - u(1-w)
 
-	return u;
+	return g;
 }
 
 CudaDeviceFunction real_t   acceleration_x()    //returns acceleration_x
