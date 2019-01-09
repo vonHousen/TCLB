@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC10_5/">
+<CLBConfig version="2.0" output="output/WC10_6/">
 
 	<Units>
 		<Params Size="0.04m"        gauge="160"/>
@@ -73,10 +73,10 @@
 
 	<VTK/>
 	<FieldParameter field="w" where="DesignSpace"/>
-    <Optimize method="MMA" MaxEvaluations="50">
-            <OptSolve Iterations="40000"/>
-            <VTK/>
-    </Optimize>
+	<Optimize method="MMA" MaxEvaluations="50">
+        	<OptSolve Iterations="40000"/>
+           	<VTK/>
+   	</Optimize>
 
 	<Params PenaltyPorosityInObj="5e-3"/>
 	<FieldParameter field="w" where="DesignSpace"/>
@@ -84,6 +84,13 @@
 		<OptSolve Iterations="4000"/>
 		<VTK/>
 	</Optimize>
+
+	<Params PenaltyPorosityInObj="5e-2"/>
+        <FieldParameter field="w" where="DesignSpace"/>
+        <Optimize method="MMA" MaxEvaluations="20">
+                <OptSolve Iterations="4000"/>
+                <VTK/>
+        </Optimize>
 
 	<Solve Iterations="50000"/>
 	<VTK/>
