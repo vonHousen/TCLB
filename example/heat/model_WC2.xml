@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC2_7/">
+<CLBConfig version="2.0" output="output/WC2_14/">
 
 	<Units>
 		<Params Size="0.0001m"      gauge="1"/>
@@ -8,7 +8,7 @@
 		<Params Density="1000kg/m3" gauge="1"/>
 	</Units>
 
-	<Geometry nx="0.04m" ny="0.01m+2">
+	<Geometry nx="0.01m" ny="0.01m+2">
 
 		<BGK>
 			<Box/>
@@ -31,14 +31,14 @@
 	<Model>
 		<Params InitTemperature="300K"/>
 		<Params AlfaFluid="0.1666"/>
-		<Params G_X="0.03m/s2"/>
+		<Params G_X="0.2m/s2"/>
 	</Model>
 
 	<VTK/>
-	<Stop Iterations="100" MassFlowGlobalChange="1e-2" times="10"/>
-	<Solve Iterations="50000">
-		<Log Iterations="1000"/>
-		<VTK Iterations="5000"/>
+	<!--Stop Iterations="100" MassFlowGlobalChange="1e-5" times="10"/-->
+	<Solve Iterations="20s">
+		<Log Iterations="1s"/>
+		<VTK Iterations="1s"/>
 	</Solve>
 
 
