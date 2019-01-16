@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC3_1/">
+<CLBConfig version="2.0" output="output/WC3_4/">
 
 	<Units>
 		<Params Size="0.0001m"      gauge="1"/>
@@ -8,16 +8,16 @@
 		<Params Density="1000kg/m3" gauge="1"/>
 	</Units>
 
-	<Geometry nx="0.01m" ny="0.01m+2">
+	<Geometry nx="0.01m" ny="0.01m">
 
 		<BGK>
 			<Box/>
 		</BGK>
 
-		<Wall mask="ALL">
+		<!--Wall mask="ALL">
 			<Box dy="0" ny="1"/>
 			<Box dy="-1" ny="1"/>
-		</Wall>
+		</Wall-->
 
 		<InletGauge>
 			<Box dx="0" nx="1"/>
@@ -36,13 +36,14 @@
 		<Params InitTemperature="300K"/>
 		<Params AlfaFluid="0.1666"/>
 		<Params InitSourceTemperature="400K"/>
+		<!--Params InitVelocityY="0.04"/-->
 	</Model>
 
 	<VTK/>
 	<!--Stop Iterations="100" MassFlowGlobalChange="1e-2" times="10"/-->
-	<Solve Iterations="50000">
-		<Log Iterations="1000"/>
-		<VTK Iterations="5000"/>
+	<Solve Iterations="20000">
+		<Log Iterations="500"/>
+		<VTK Iterations="500"/>
 	</Solve>
 
 

@@ -1,9 +1,9 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC2_14/">
+<CLBConfig version="2.0" output="output/WC2_19/">
 
 	<Units>
-		<Params Size="0.0001m"      gauge="1"/>
+		<Params Size="0.0001m"      gauge="0.07"/>
 		<Params Nu="1e-5m2/s"       gauge="0.166666666"/>
 		<Params Density="1000kg/m3" gauge="1"/>
 	</Units>
