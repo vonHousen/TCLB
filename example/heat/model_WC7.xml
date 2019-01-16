@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC7_4/">
+<CLBConfig version="2.0" output="output/WC7_7/">
 
 	<Units>
 		<Params Size="1e-4m"        gauge="1"/>
@@ -8,7 +8,7 @@
 		<Params Density="1e3kg/m3"  gauge="1"/>
 	</Units>
 
-	<Geometry nx="0.04m" ny="0.02m">
+	<Geometry nx="0.04m" ny="0.01m">
 		<BGK>
 			<Box/>
 		</BGK>
@@ -27,30 +27,30 @@
 		</WallNorth>
 
 		<InitHeater>
-			<Box dy="0.0095m" ny="0.001m" dx="0.0195m" nx="0.001m"/>
+			<Box dy="0.0045m" ny="0.001m" dx="0.0195m" nx="0.001m"/>
 		</InitHeater>
 
 	</Geometry>
 
 	<Model>
-		<Params InitTemperature="300K"/>
-		<Params AlfaFluid="0.1"/>
+		<Params InitTemperature="320K"/>
+		<Params AlfaFluid="0.00025"/>
 		<Params Omega="1.0"/>
-		<Params Q="0.1"/>
+		<Params Q="0.002"/>
 		<Params Beta="210e-6"/>
-		<Params Tref="300K"/>
+		<Params Tref="320K"/>
 		<Params G_Boussinesq_Y="-9.81m/s2"/>
 		<Params Ldim="0.02m"/>
-		<Params Adiffusity="0.143mm2/s"/>
+		<Params Adiffusity="0.01"/>
 		<Params Nu_dup="1e-5m2/s"/>
-		<Params InitSourceTemperature="350K"/>
+		<Params InitSourceTemperature="370K"/>
 	</Model>
 
 	<VTK/>
 	<!--Solve Iterations="40000"/-->
-	<Solve Iterations="80000">
-		<VTK Iterations="2000"/>
-		<Log Iterations="2000"/>
+	<Solve Iterations="200000">
+		<VTK Iterations="4000"/>
+		<Log Iterations="4000"/>
 	</Solve>
 
 
