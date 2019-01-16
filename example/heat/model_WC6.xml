@@ -1,6 +1,6 @@
 
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC6/">
+<CLBConfig version="2.0" output="output/WC6_1/">
 
 	<Units>
 		<Params Size="0.0001m"      gauge="1"/>
@@ -35,19 +35,17 @@
 	</Geometry>
 
 	<Model>
-		<Params InitTemperature="300K"/>
+		<Params InitTemperature="350K"/>
 		<Params AlfaFluid="0.1"/>
 		<Params AlfaSolid="1.0"/>
-		<Params Q="0.1"/>
+		<Params Q="0.05"/>
 		<Params W_init="0.5"/>
 
 	</Model>
 
 	<VTK/>
-	<Solve Iterations="20000">
-		<Log Iterations="1000"/>
-		<VTK Iterations="1000"/>
-	</Solve>
+	<Solve Iterations="50000"/>
+	<VTK/>
 
 
 
