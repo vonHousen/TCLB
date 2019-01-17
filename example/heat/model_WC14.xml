@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<CLBConfig version="2.0" output="output/WC14/">
+	<Units>
+		<Params Size="0.04m" gauge="80" />
+		<Params Nu="1e-5m2/s" gauge="0.166666666" />
+		<Params Density="1e3kg/m3" gauge="1" />
+	</Units>
+
+	<Geometry nx="0.04m" ny="0.02m">
+		<BGK>
+			<Box />
+		</BGK>
+		<DesignSpace>
+			<Box dy="0" ny="0.02m" />
+		</DesignSpace>
+		<PseudoWall>
+			<Box dx="0.015m" fx="0.035m" dy="0.000m" ny="0.005m" />
+			<Wedge dx="0.000m" fx="0.015m" dy="0.000m" ny="0.005m" direction="LowerRight" />
+			<Wedge dx="0.015m" fx="0.020m" dy="0.005m" ny="0.005m" direction="LowerRight" />
+			<Wedge dx="0.020m" fx="0.035m" dy="0.005m" ny="0.005m" direction="LowerLeft" />
+			<Wedge dx="0.035m" fx="0.040m" dy="0.000m" ny="0.005m" direction="LowerLeft" />
+			<Box dx="0.000m" fx="0.015m" dy="0.015m" ny="0.005m" />
+			<Box dx="0.035m" fx="0.040m" dy="0.015m" ny="0.005m" />
+			<Wedge dx="0.000m" fx="0.015m" dy="0.010m" ny="0.005m" direction="UpperLeft" />
+			<Wedge dx="0.015m" fx="0.020m" dy="0.015m" ny="0.005m" direction="UpperLeft" />
+			<Wedge dx="0.020m" fx="0.035m" dy="0.015m" ny="0.005m" direction="UpperRight" />
+			<Wedge dx="0.035m" fx="0.040m" dy="0.010m" ny="0.005m" direction="UpperRight" />
+		</PseudoWall>
+		<Wall mask="ALL">
+			<Box dy="0" ny="1" />
+			<Box dy="-1" ny="1" />
+		</Wall>
+		<WallSouth>
+			<Box dy="0" ny="1" />
+		</WallSouth>
+		<WallNorth>
+			<Box dy="-1" ny="1" />
+		</WallNorth>
+		<InletGauge>
+			<Box dx="0" nx="1" />
+		</InletGauge>
+		<OutletGauge>
+			<Box dx="-1" nx="1" />
+		</OutletGauge>
+	</Geometry>
+
+	<Model>
+		<Params AlfaFluid="0.1666" />
+		<Params AlfaSolid="1.6666" />
+		<Params Q="1.39e-1" />
+		<Params Tref="300K" />
+		<Params W_init="0.0" />
+		<Params G_Boussinesq_Y="-9.81m/s2" />
+		<Params Ldim="0.02m" />
+		<Params Adiffusity="0.143mm2/s" />
+		<Params Nu_dup="1e-5m2/s" />
+		<Params FluidVolumeInObj="-1e-6" />
+		<Params FluidVelocityInObj="1e-3" />
+		<Params MassFlowOutInObj="10.0" />
+		<Params PenaltyPorosityInObj="1e-3" />
+	</Model>
+
+	<VTK />
+	<Log Iterations="1000" />
+	<Stop Iterations="1000" MassFlowOutChange="1e-5" times="10" />
+	<Solve Iterations="100000" />
+
+	<FieldParameter field="w" where="DesignSpace" />
+	<Optimize method="MMA" MaxEvaluations="100" Material="more">
+		<OptSolve Iterations="100000" />
+		<VTK />
+	</Optimize>
+
+	<Params PenaltyPorosityInObj="5e-3" />
+	<FieldParameter field="w" where="DesignSpace" Material="more" />
+	<Optimize method="MMA" MaxEvaluations="40">
+		<OptSolve Iterations="100000" />
+		<VTK />
+	</Optimize>
+
+	<Params PenaltyPorosityInObj="2.5e-2" />
+	<FieldParameter field="w" where="DesignSpace" Material="more" />
+	<Optimize method="MMA" MaxEvaluations="20">
+		<OptSolve Iterations="100000" />
+		<VTK />
+	</Optimize>
+
+	<Params PenaltyPorosityInObj="5e-2" />
+	<FieldParameter field="w" where="DesignSpace" Material="more"/>
+	<Optimize method="MMA" MaxEvaluations="20" >
+		<OptSolve Iterations="100000" />
+	</Optimize>
+
+	<Params MassFlowOutInObj="3.0" />
+	<FieldParameter field="w" where="DesignSpace" Material="more"/>
+	<Optimize method="MMA" MaxEvaluations="20" >
+		<OptSolve Iterations="100000" />
+		<VTK />
+	</Optimize>
+
+	<Params PenaltyPorosityInObj="1e-1" />
+	<FieldParameter field="w" where="DesignSpace" Material="more"/>
+	<Optimize method="MMA" MaxEvaluations="20" >
+		<OptSolve Iterations="100000" />
+		<VTK />
+	</Optimize>
+
+	<Params MassFlowOutInObj="1.0" />
+	<FieldParameter field="w" where="DesignSpace" Material="more"/>
+	<Optimize method="MMA" MaxEvaluations="20" >
+		<OptSolve Iterations="100000" />
+		<VTK />
+	</Optimize>
+
+	<Params PenaltyPorosityInObj="5e-1" />
+	<FieldParameter field="w" where="DesignSpace" Material="more"/>
+	<Optimize method="MMA" MaxEvaluations="20">
+		<OptSolve Iterations="100000" />
+		<VTK />
+	</Optimize>
+
+	<Solve Iterations="100000" />
+	<VTK/>
+
+</CLBConfig>

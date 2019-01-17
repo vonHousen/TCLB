@@ -34,9 +34,9 @@
 
 	<Model>
 		<Params InitTemperature="320K"/>
-		<Params AlfaFluid="0.0005"/>
+		<Params AlfaFluid="0.0002"/>
 		<Params Omega="1.0"/>
-		<Params Q="0.002"/>
+		<Params Q="0.001"/>
 		<Params Beta="210e-6"/>
 		<Params Tref="320K"/>
 		<Params G_Boussinesq_Y="-9.81m/s2"/>
