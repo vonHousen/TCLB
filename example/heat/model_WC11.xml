@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<CLBConfig version="2.0" output="output/WC11_1/">
+<CLBConfig version="2.0" output="output/WC11_2/">
 	<Units>
 		<Params Size="0.04m" gauge="160" />
 		<Params Nu="1e-5m2/s" gauge="0.166666666" />
@@ -65,18 +65,58 @@
 	<Stop Iterations="1000" MassFlowOutChange="1e-5" times="10" />
 	<Solve Iterations="100000" />
 
-	<VTK />
 	<FieldParameter field="w" where="DesignSpace" />
-	<Optimize method="MMA" MaxEvaluations="100">
+	<Optimize method="MMA" MaxEvaluations="100" Material="more">
 		<OptSolve Iterations="100000" />
-		<VTK/>
+		<VTK />
+	</Optimize>
+
+	<Params PenaltyPorosityInObj="5e-3" />
+	<FieldParameter field="w" where="DesignSpace" Material="more" />
+	<Optimize method="MMA" MaxEvaluations="40">
+		<OptSolve Iterations="100000" />
+		<VTK />
+	</Optimize>
+
+	<Params PenaltyPorosityInObj="2.5e-2" />
+	<FieldParameter field="w" where="DesignSpace" Material="more" />
+	<Optimize method="MMA" MaxEvaluations="20">
+		<OptSolve Iterations="100000" />
+		<VTK />
 	</Optimize>
 
 	<Params PenaltyPorosityInObj="5e-2" />
-	<FieldParameter field="w" where="DesignSpace" />
-	<Optimize method="MMA" MaxEvaluations="100">
+	<FieldParameter field="w" where="DesignSpace" Material="more"/>
+	<Optimize method="MMA" MaxEvaluations="20" >
 		<OptSolve Iterations="100000" />
-		<VTK/>
+	</Optimize>
+
+	<Params MassFlowOutInObj="3.0" />
+	<FieldParameter field="w" where="DesignSpace" Material="more"/>
+	<Optimize method="MMA" MaxEvaluations="20" >
+		<OptSolve Iterations="100000" />
+		<VTK />
+	</Optimize>
+
+	<Params PenaltyPorosityInObj="1e-1" />
+	<FieldParameter field="w" where="DesignSpace" Material="more"/>
+	<Optimize method="MMA" MaxEvaluations="20" >
+		<OptSolve Iterations="100000" />
+		<VTK />
+	</Optimize>
+
+	<Params MassFlowOutInObj="1.0" />
+	<FieldParameter field="w" where="DesignSpace" Material="more"/>
+	<Optimize method="MMA" MaxEvaluations="20" >
+		<OptSolve Iterations="100000" />
+		<VTK />
+	</Optimize>
+
+	<Params PenaltyPorosityInObj="5e-1" />
+	<FieldParameter field="w" where="DesignSpace" Material="more"/>
+	<Optimize method="MMA" MaxEvaluations="20">
+		<OptSolve Iterations="100000" />
+		<VTK />
 	</Optimize>
 
 	<Solve Iterations="100000" />
