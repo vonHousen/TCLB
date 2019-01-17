@@ -11,7 +11,7 @@
 			<Box />
 		</BGK>
 		<DesignSpace>
-			<Box dy="0" fy="0" />
+			<Box dy="0" ny="0.02m" />
 		</DesignSpace>
 		<PseudoWall>
 			<Box dx="0.015m" fx="0.035m" dy="0.000m" ny="0.005m" />
