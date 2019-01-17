@@ -34,7 +34,7 @@
 
 	<Model>
 		<Params InitTemperature="320K"/>
-		<Params AlfaFluid="0.00025"/>
+		<Params AlfaFluid="0.0005"/>
 		<Params Omega="1.0"/>
 		<Params Q="0.002"/>
 		<Params Beta="210e-6"/>
@@ -46,11 +46,11 @@
 		<Params InitSourceTemperature="370K"/>
 	</Model>
 
+	<Solve Iterations="150000"/>
 	<VTK/>
-	<!--Solve Iterations="40000"/-->
-	<Solve Iterations="200000">
-		<VTK Iterations="4000"/>
-		<Log Iterations="4000"/>
+	<Solve Iterations="400000">
+		<VTK Iterations="8000"/>
+		<Log Iterations="8000"/>
 	</Solve>
 
 

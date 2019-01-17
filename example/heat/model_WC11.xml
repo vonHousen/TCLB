@@ -74,9 +74,9 @@
 
 	<Params PenaltyPorosityInObj="5e-2" />
 	<FieldParameter field="w" where="DesignSpace" />
-	<VTK Iterations="5000" />
 	<Optimize method="MMA" MaxEvaluations="100">
 		<OptSolve Iterations="100000" />
+		<VTK/>
 	</Optimize>
 
 	<Solve Iterations="100000" />
