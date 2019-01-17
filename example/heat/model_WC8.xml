@@ -35,9 +35,8 @@
 	<Model>
 		<Params InitTemperature="300K"/>
 		<Params InitVelocityX="0.06m/s"/>
-		<Params AlfaFluid="0.00025"/>
+		<Params AlfaFluid="0.025"/>
 		<Params AlfaSolid="1.00000"/>
-		<!--Params G_Boussinesq_Y="-9.81e-3m/s2"/-->
 		<Params Omega="1.0"/>
 		<Params Tref="300K"/>
 		<Params Nu_dup="1e-5m2/s"/>
@@ -46,10 +45,8 @@
 	</Model>
 
 	<VTK/>
-	<Solve Iterations="10000">
-		<VTK Iterations="1000"/>
-		<Log Iterations="100"/>
-	</Solve>
+	<Solve Iterations="50000"/>
+	<VTK/>
 
 
 </CLBConfig>
