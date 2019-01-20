@@ -22,3 +22,5 @@ transfer
 login
 sync
 .idea/*
+*.out
+archive
