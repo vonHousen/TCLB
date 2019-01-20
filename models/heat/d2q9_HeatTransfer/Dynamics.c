@@ -378,7 +378,7 @@ CudaDeviceFunction real_t   G_darcy(real_t w, real_t u)
 {
 	real_t      w_temp  = w,
 				g       = u,
-				p       = 50.0;
+				p       = P;
 
 
 	w_temp = atan( p * w_temp ) / atan( p * 1.0 );	// w approximation

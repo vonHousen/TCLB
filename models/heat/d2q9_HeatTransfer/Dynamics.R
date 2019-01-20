@@ -134,6 +134,9 @@ AddSetting(	name="W_init",
 AddSetting(	name="InletVelocity",
 			default=0,
 			comment='Velocity on inlet' )
+AddSetting(	name="P",
+			default=50,
+			comment='Factor on Darcy force aproximation' )
 
 
 #=====================================================
